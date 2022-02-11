@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+
 def read_QEnamelist(inputf):
     qe_namelist = {"&CONTROL":None, "&SYSTEM":None, "&ELECTRONS":None, "&IONS":None, "&CELL":None}
 

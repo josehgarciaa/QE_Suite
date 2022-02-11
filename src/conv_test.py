@@ -1,6 +1,6 @@
 #!/home/jgarcia/anaconda3/bin/python
 
-import qetools as qt
+import qesuite as qt
 import numpy as np
 import matplotlib.pyplot as plt
 import os.path
