@@ -2,10 +2,10 @@ import format
 
 
 
+import namelists as nls
+import cards 
 class qe_handler:
     namelists = dict(); 
-
-
 
 def load_inputf(inputf):
     """
@@ -14,22 +14,18 @@ def load_inputf(inputf):
         inputf (str): Pathname to the location of the file.
     return An instance of class qe_handler.  
     """
-    namelists = dict(); 
 
-    #Initialize an empty instance of qe_handler
-    qeh = qe_handler();
+    #Check if file exists and open it.
+    #  Not onde
 
-    #Check if file exists and open it. 
     with open(inputf) as  file:
         data = format.remove_double(" ",file.read().replace("\t"," ")); #Remove extra spaces
-        namelist_blocks = format.remove_empty(data.split("\\"));        
-        for nlb in namelist_blocks:
-            nlb= nlb.split("\n");
-            nl = nlb.pop(0);
-            namelists[nl] = nlb;
- 
-    print( namelists)
-            #All namelist start with a &
+        nl_blocks = { nl: nls.get_namelist_block(nl, data) for nl in nls.namelists };
+
+        c= cards.cards_fromtxt(data)["ATOMIC_SPECIES"];
+        print( c )
+
+             #All namelist start with a &
 #            if "&" in line and (line in qe_namelist):
 #                namelist = line;
 #                qe_namelist[namelist] = dict();
@@ -40,7 +36,7 @@ def load_inputf(inputf):
 #                    key,value = list(map(str.strip, option.split('=')));
 #                    qe_namelist[namelist][key]=value;
 #                    option  = next(file).strip();
-    return namelists;
+    return 0;
 
 def write_QEnamelist( qe_namelist, ofile= "test"):
     with open( ofile, 'w') as file:
