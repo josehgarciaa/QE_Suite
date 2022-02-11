@@ -1,28 +1,46 @@
+import format 
 
 
 
-namelist = {"&CONTROL":None, "&SYSTEM":None, "&ELECTRONS":None, "&IONS":None, "&CELL":None};
+class qe_handler:
+    namelists = dict(); 
 
 
 
-def read_QEnamelist(inputf):
+def load_inputf(inputf):
+    """
+    A function that reads a quantum espresso input file and returns a qehandler object. 
+    Args:
+        inputf (str): Pathname to the location of the file.
+    return An instance of class qe_handler.  
+    """
+    namelists = dict(); 
 
+    #Initialize an empty instance of qe_handler
+    qeh = qe_handler();
+
+    #Check if file exists and open it. 
     with open(inputf) as  file:
-        for line in file:
-            line = line.strip();
-            
+        data = format.remove_double(" ",file.read().replace("\t"," ")); #Remove extra spaces
+        namelist_blocks = format.remove_empty(data.split("\\"));        
+        for nlb in namelist_blocks:
+            nlb= nlb.split("\n");
+            nl = nlb.pop(0);
+            namelists[nl] = nlb;
+ 
+    print( namelists)
             #All namelist start with a &
-            if "&" in line and (line in qe_namelist):
-                namelist = line;
-                qe_namelist[namelist] = dict();
+#            if "&" in line and (line in qe_namelist):
+#                namelist = line;
+#                qe_namelist[namelist] = dict();
                 
                 #read options
-                option  = next(file).strip()
-                while option!= "/":
-                    key,value = list(map(str.strip, option.split('=')));
-                    qe_namelist[namelist][key]=value;
-                    option  = next(file).strip();
-    return qe_namelist
+#                option  = next(file).strip()
+#                while option!= "/":
+#                    key,value = list(map(str.strip, option.split('=')));
+#                    qe_namelist[namelist][key]=value;
+#                    option  = next(file).strip();
+    return namelists;
 
 def write_QEnamelist( qe_namelist, ofile= "test"):
     with open( ofile, 'w') as file:
