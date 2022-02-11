@@ -1,0 +1,49 @@
+&CONTROL
+ calculation='scf'
+ outdir='./out/'
+ prefix='CrBrS_soc'
+ pseudo_dir='../pseudo/SSSP/PBE/'
+ etot_conv_thr=3.0000000000d-05
+ forc_conv_thr=1.0000000000d-04
+ tstress=.true.
+ tprnfor=.true.
+ verbosity='high'
+/\ 
+&SYSTEM
+ ibrav=8
+ celldm(1)=8.93039
+ celldm(2)=0.751536
+ celldm(3)=4.51602
+ nat=6
+ ntyp=3
+ assume_isolated='2D'
+ ecutrho=100.0
+ ecutwfc=10.0
+ degauss=1.9d-03
+ occupations='smearing'
+ smearing='fermi-dirac'
+ noncolin=.true.
+ starting_magnetization(1)=1.0
+ angle1(1)=90
+ lspinorb=.true.
+/\ 
+&ELECTRONS
+ diagonalization='david'
+ diago_full_acc=.false.
+ conv_thr=1.2000000000d-9
+ electron_maxstep=200
+ mixing_beta=0.3
+/\ 
+ATOMIC_SPECIES
+Cr 51.996 cr_pbe_v1.5.uspp.F.UPF
+Br 79.901 br_pbe_v1.4.uspp.F.UPF
+S 32.059 s_pbe_v1.4.uspp.F.UPF
+ATOMIC_POSITIONS crystal
+Cr 0.5 0.0 0.4509482228
+Cr 0.0 0.5 0.5490282197
+Br 0.5 0.5 0.3669391845
+Br 0.0 0.0 0.6330375943
+S 0.0 0.0 0.4744518082
+S 0.5 0.5 0.5255249704
+K_POINTS automatic
+10 10 1 1 1 1
