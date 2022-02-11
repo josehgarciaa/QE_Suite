@@ -1,8 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-setup.cfg
-src/qe_suite.egg-info/PKG-INFO
-src/qe_suite.egg-info/SOURCES.txt
-src/qe_suite.egg-info/dependency_links.txt
-src/qe_suite.egg-info/top_level.txt
