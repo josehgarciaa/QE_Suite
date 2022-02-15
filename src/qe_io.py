@@ -1,5 +1,18 @@
 import format as f
 
+
+def format(x):
+    
+    if isinstance(x, str):
+        return "\'"+x+"\'";
+
+    if isinstance(x, bool):
+        return ".TRUE." if x else ".FALSE.";
+
+    return str(x);
+
+
+
 def load_xyz(fname):
     with open(fname) as file:
         data = f.remove_double(" ", file.read().replace("\t"," ") );
@@ -21,38 +34,5 @@ def load_cell(fname):
 
 
 
-import namelists as nls
-import cards 
-class qe_handler:
-    namelists = dict(); 
-
-def load_inputf(inputf):
-    """
-    A function that reads a quantum espresso input file and returns a qehandler object. 
-    Args:
-        inputf (str): Pathname to the location of the file.
-    return An instance of class qe_handler.  
-    """
-
-    #Check if file exists and open it.
-    #  Not onde
-
-    with open(inputf) as  file:
-        data = f.remove_double(" ",file.read().replace("\t"," ")); #Remove extra spaces
-        nl_blocks = { nl: nls.get_namelist_block(nl, data) for nl in nls.namelists };
-
-        c= cards.cards_fromtxt(data)["ATOMIC_SPECIES"];
-        print( c )
-
-             #All namelist start with a &
-#            if "&" in line and (line in qe_namelist):
-#                namelist = line;
-#                qe_namelist[namelist] = dict();
-                
-                #read options
-#                option  = next(file).strip()
-#                while option!= "/":
-#                    key,value = list(map(str.strip, option.split('=')));
-#                    qe_namelist[namelist][key]=value;
-#                    option  = next(file).strip();
-    return 0;
+#import src._namelists.namelists as nls
+#import cards 

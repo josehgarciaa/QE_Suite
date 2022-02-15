@@ -1,39 +1,48 @@
 import qe_io
-import seekpath 
-import spglib as spg
-import numpy as np
+import namelists.control
+import namelists.system
+import namelists.electrons
+import namelists.ions
+import namelists.cell
+import namelists.fcp
+
 from ase import Atom
 from ase import Atoms
 
-
-import _namelists.control as control
-
-
-#c = control.handler();
-#print( c.options.keys() )
-#q = qes.handler();
-
-#print( q.c.options.keys() )
-
-#import json
-#fname ="SSSP_1.1.2_PBEsol_precision.json";
-#with open(fname) as f:
-#    pseudo_potentials = json.loads(f.read());
 
 
 class handler():
     def __init__(self):
         x=0
-        #self.c = control.handler();
+        self.c   = namelists.control.handler();
+        self.s   =  namelists.system.handler();
+        self.e   = namelists.electrons.handler();
+        self.ions= namelists.ions.handler();
+        self.cell= namelists.cell.handler();
+        self.fcp = namelists.fcp.handler();
 
     def set_structure(self, structure  ):
         """
         Set the atomic position and lattice vectors
 
         Args:
-            structure ( tuple) : A tuple containing (cell, positions, numbers)n array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
+            structure ( Atoms) : A tuple containing (cell, positions, numbers)n array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
 
         """
+        symbols = structure.get_chemical_symbols();
+        unique_symbols = [];
+        for s in symbols:
+            if s not in unique_symbols:
+                unique_symbols.append(s);
+
+        self.s.options["nat"]  = len(symbols);
+        self.s.options["ntype"]= len(unique_symbols);
+
+#        self.s.set_atoms(structure);
+#        scal_pos= structure.get_scaled_positions();
+#        symbols = structure.get_chemical_symbols();
+#        xyz = [ (s,x,y,z) for s,(x,y,z) in zip(symbols,scal_pos)]
+#        self.s.set_atomic_positions(xyz);
         return True;
 
     def set_calculation(self, calc  ):
@@ -44,19 +53,7 @@ class handler():
         Args:
             calc ( string) : 
         """
-        return 0;
-
-    def use_SSSP(self, type="efficiency", path="."):
-        """
-        Use the standard Solid State Pseudo Potential (SSSP). The type define whereas you want to use efficiency or efficiency 
-        or precision. 
-        If you use this option please read the acknowledgment instrunctions in :
-        https://www.materialscloud.org/discover/sssp/table/efficiency
-
-        Args:
-            type ( string) : 
-            path ( string) : 
-        """
+        self.c.options["calculation"]= calc;
         return 0;
 
     def use_symmetries(self):
@@ -81,15 +78,39 @@ class handler():
         """
         Write the input file for QESpresso
         """
-        print("Hola mundo")        
+        text = self.c.text();
+        text += "\n"+self.s.text();
+        text += "\n"+self.e.text();
 
+        calc = self.c.options["calculation"];
+        if calc =="relax" or calc =="md" or calc =="vc-relax"or calc =="vc-md":
+            text += "\n"+self.ions.text();
+
+        if self.c.options["lfcp"]:
+            text += "\n"+self.fcp.text();
+
+
+
+        print(text)
+        return 0;
+
+
+    def use_SSSP(self, type="efficiency", path="."):
+        """
+        Use the standard Solid State Pseudo Potential (SSSP). The type define whereas you want to use efficiency or efficiency 
+        or precision. 
+        If you use this option please read the acknowledgment instrunctions in :
+        https://www.materialscloud.org/discover/sssp/table/efficiency
+
+        Args:
+            type ( string) : 
+            path ( string) : 
+        """
         return 0;
 
 
 
-
-
-def generate_from_xyz(xyz, cell, magnetic=False, periodic=(True, True,True) ):
+def generate_from_xyz(xyz, cell, magnetic=False, pbc=(True, True,True) ):
     """
     Generate a QESuite handler using the structural informaiton
     in the form of a xyz and cell file. 
@@ -101,15 +122,23 @@ def generate_from_xyz(xyz, cell, magnetic=False, periodic=(True, True,True) ):
         preiodic (bool): A tuple that indicates the periodicity directions. Default (True, True, True ).
     """
     #Convert the xyz tuple into an atom object
-    atoms    = Atoms( [ Atom(*a) for a in xyz ], cell=cell ) ;
-    structure= (atoms.get_cell(),
-                atoms.get_scaled_positions(),
-                atoms.get_atomic_numbers() );
-    structure= spg.standardize_cell(structure, symprec=1e-3);
-
+    structure    = Atoms( [ Atom(*a) for a in xyz ], cell=cell, pbc=pbc ) ;
     #Initialize the QESuite handler
     qes_h = handler();
     qes_h.set_structure( structure = structure );
 
     return qes_h;
+
+
+
+#c = control.handler();
+#print( c.options.keys() )
+#q = qes.handler();
+
+#print( q.c.options.keys() )
+
+#import json
+#fname ="SSSP_1.1.2_PBEsol_precision.json";
+#with open(fname) as f:
+#    pseudo_potentials = json.loads(f.read());
 

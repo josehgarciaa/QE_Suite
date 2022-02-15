@@ -1,2 +1,0 @@
-class system:
-    options = dict();
