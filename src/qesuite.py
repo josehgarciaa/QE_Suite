@@ -1,183 +1,115 @@
+import qe_io
+import seekpath 
+import spglib as spg
 import numpy as np
-import matplotlib.pyplot as plt
+from ase import Atom
+from ase import Atoms
 
 
-
-def read_QEnamelist(inputf):
-    qe_namelist = {"&CONTROL":None, "&SYSTEM":None, "&ELECTRONS":None, "&IONS":None, "&CELL":None}
-
-    with open(inputf) as  file:
-        for line in file:
-            line = line.strip();
-            
-            #All namelist start with a &
-            if "&" in line and (line in qe_namelist):
-                namelist = line;
-                qe_namelist[namelist] = dict();
-                
-                #read options
-                option  = next(file).strip()
-                while option!= "/":
-                    key,value = list(map(str.strip, option.split('=')));
-                    qe_namelist[namelist][key]=value;
-                    option  = next(file).strip();
-    return qe_namelist
-
-def write_QEnamelist( qe_namelist, ofile= "test"):
-    with open( ofile, 'w') as file:
-        for namespace, options in qe_namelist.items():
-            if options != None:    
-                file.write(namespace+"\n")
-                for option, value in options.items():
-                    file.write(" "+option+"="+str(value)+"\n")
-                file.write("/ \n")
+import _namelists.control as control
 
 
-def read_QEnamelist(inputf):
-    qe_namelist = {"&CONTROL":None, "&SYSTEM":None, "&ELECTRONS":None, "&IONS":None, "&CELL":None}
+#c = control.handler();
+#print( c.options.keys() )
+#q = qes.handler();
 
-    with open(inputf) as  file:
-        for line in file:
-            line = line.strip();
-            
-            #All namelist start with a &
-            if "&" in line and (line in qe_namelist):
-                namelist = line;
-                qe_namelist[namelist] = dict();
-                
-                #read options
-                option  = next(file).strip()
-                while option!= "/":
-                    key,value = list(map(str.strip, option.split('=')));
-                    qe_namelist[namelist][key]=value;
-                    option  = next(file).strip();
-    return qe_namelist
+#print( q.c.options.keys() )
 
-def write_atomic_specties(atm_spec,inputf):
-    with open(inputf, "a") as file:
-        file.write("ATOMIC_SPECIES\n")
-        for a, m, pseudo in atm_spec:
-            file.write(a+" "+m+" "+pseudo+"\n")
+#import json
+#fname ="SSSP_1.1.2_PBEsol_precision.json";
+#with open(fname) as f:
+#    pseudo_potentials = json.loads(f.read());
 
-def read_atomic_species(inputf):
-    atm_spec = [];
-    with open(inputf) as f:
-        for line in f:
-            if "atomic_species" in line.lower():
-                items = next(f).strip().split(" ");
-                items = [x for x in items if x!=""]
-                while len(items)== 3:
-                    atm_spec.append(items);
-                    items = next(f).strip().split(" ");
-                    items = [x for x in items if x!=""]
 
-                return atm_spec;
-    print("atomic positions not found. Returning 0");
-    return 0;
+class handler():
+    def __init__(self):
+        x=0
+        #self.c = control.handler();
 
-def write_atomic_positions(atm_pos,inputf):
-    with open(inputf, "a") as file:
-        file.write("ATOMIC_POSITIONS crystal\n")
-        for p in atm_pos:
-            file.write("{} {} {} {}\n".format(*p))
+    def set_structure(self, structure  ):
+        """
+        Set the atomic position and lattice vectors
 
-def read_atomic_positions(inputf):
-    atm_pos = [];
-    with open(inputf) as f:
-        for line in f:
-            if "atomic_positions" in line.lower():
-                print(line)
-                items = next(f).strip().split(" ");
-                items = [x for x in items if x!=""]
+        Args:
+            structure ( tuple) : A tuple containing (cell, positions, numbers)n array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
 
-                while len(items)== 4:
-                    atm_pos.append(items);
-                    items = next(f).strip().split(" ");
-                    items = [x for x in items if x!=""]
-                return atm_pos;
-    print("atomic positions not found. Returning 0");
-    return 0;
+        """
+        return True;
 
-def read_kpoints(inputf):
-    with open(inputf) as f:
-        for line in f:
-            if ("K_POINTS" in line) and ("automatic" in line):
-                kpoints = next(f)
-                kpoints = np.array(list(map(int,kpoints.strip().split(" "))));
-                return kpoints;
-        print("the K_POINTS atomatic flat not found. Returning zero")
+    def set_calculation(self, calc  ):
+        """
+        Defines the calculation to be performed. This flag will initialize different options required for the calculation
+        using the default values
+
+        Args:
+            calc ( string) : 
+        """
         return 0;
+
+    def use_SSSP(self, type="efficiency", path="."):
+        """
+        Use the standard Solid State Pseudo Potential (SSSP). The type define whereas you want to use efficiency or efficiency 
+        or precision. 
+        If you use this option please read the acknowledgment instrunctions in :
+        https://www.materialscloud.org/discover/sssp/table/efficiency
+
+        Args:
+            type ( string) : 
+            path ( string) : 
+        """
+        return 0;
+
+    def use_symmetries(self):
+
+
         
-def write_kpoints(kpoints,inputf):
-    with open(inputf, "a") as file:
-        file.write("K_POINTS automatic\n")
-        file.write("{} {} {} {} {} {}\n".format(*kpoints));
-        
-def mod_kpoints(kpoint, dkp,shift):
-    kp = kpoint[:3];
-    ks = kpoint[3:]*0 +shift; 
-
-    if (kp!=1).all():
-        print("Gamma point calculation not supported, change your kpoints beyond 1")
-        return kpoint;
-    
-    kp[kp!=1]+= dkp;
-    return np.array([*kp,*ks]);
-
-def best_kpoints( kpoints, conv_kps ):
-    conv_kps = np.array(conv_kps);
-    idx = np.argmin(conv_kps[:,0]);
-    niter = conv_kps[idx][0];
-    ciks = conv_kps[idx][1];
-    cink = conv_kps[idx][2];
-    ink = kpoints[:3];
-    ink = [ ( cink if nk!= 1 else 1) for nk in ink ];
-    iks = np.array([1,1,1]); iks.fill(ciks)
-    return [*ink,*iks];
-
-def read_finalenergy(inputf):
-    energy = None;
-    with open(inputf) as  file:
-        for line in file:
-            if "!    total energy" in line:
-                key, value = line.split("=");
-                energy = float( value.replace("Ry","").strip() ); 
-    return energy;
-
-def read_finalocurrence(label, inputf):
-    obs = None;
-    with open(inputf) as  file:
-        for line in file:
-            if label in line:
-                value = line.split("=")[1];
-                obs = value.strip().split(" ")[0];
-                obs = float( obs ); 
-    return obs;
+        #def get_ibrav(cell, brav_lat ):
+        #    if brav_lat== 'mP': #monoclinic
+        #        cdm1 = np.linalg.norm(cell[0] );
+        #        cdm2 = np.linalg.norm(cell[1] )/cdm1;
+        #        cdm3 = np.linalg.norm(cell[2] )/cdm1;
+        #        cdm4 = np.dot( cell[0], cell[1])/cdm1/cdm2;
+        #        ibrav= 12
 
 
-def is_converged( array, tol=1e-5):
-    if len(array)>=2:
-        rel = np.abs( (array[-1]-array[-2])/array[-2]);
-        if rel<= tol:
-            return True;
-    return False;
+        """
+        Analyze the symmetries in the crystal strturess and force the cell to respect it
+        """
+        return 0;
 
-def final_diff(array):
-    array = np.array(array);
-    if len(array)>=2:
-        return np.abs( (array[-1]-array[-2]) );
-    return 0;
+    def write_input_file(self, ofname ):
+        """
+        Write the input file for QESpresso
+        """
+        print("Hola mundo")        
 
-def plot_conv(x,y, outputf):
-    x=np.array(x);
-    y=np.array(y);
-    num_iter = len(y);
-    x=x[1:num_iter];
+        return 0;
 
-    rel_chg = np.abs(np.diff(y)/y[:-1]);
-    plt.plot(x,rel_chg,  "-o" ); 
-    plt.gca().set_yscale('log')
-    plt.savefig(outputf);
-    return plt.gcf();
 
+
+
+
+def generate_from_xyz(xyz, cell, magnetic=False, periodic=(True, True,True) ):
+    """
+    Generate a QESuite handler using the structural informaiton
+    in the form of a xyz and cell file. 
+
+    Args:
+        cell (string): An array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
+        xyz (string): A list of tuples (s,x,y,z), whe s detones atomic specie located at the (x,y,z) position in the same units as cell.
+        magnetic (bool): A label to indicates if the system is magnetic. Default False.
+        preiodic (bool): A tuple that indicates the periodicity directions. Default (True, True, True ).
+    """
+    #Convert the xyz tuple into an atom object
+    atoms    = Atoms( [ Atom(*a) for a in xyz ], cell=cell ) ;
+    structure= (atoms.get_cell(),
+                atoms.get_scaled_positions(),
+                atoms.get_atomic_numbers() );
+    structure= spg.standardize_cell(structure, symprec=1e-3);
+
+    #Initialize the QESuite handler
+    qes_h = handler();
+    qes_h.set_structure( structure = structure );
+
+    return qes_h;
 
