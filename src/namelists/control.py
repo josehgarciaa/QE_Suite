@@ -9,6 +9,7 @@ class handler:
     self.options["forc_conv_thr"]=1e-3;
     self.options["pseudo_dir"]="./";
     self.options["lfcp"] = False;
+    
   def text(self):
     out = "&CONTROL\n";
     for k,v in self.options.items(): 

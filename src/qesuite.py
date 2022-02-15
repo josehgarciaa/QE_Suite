@@ -5,21 +5,30 @@ import namelists.electrons
 import namelists.ions
 import namelists.cell
 import namelists.fcp
+import cards.atomic_species
+import cards.kpoints
+import cards.cell_params
+import cards.constraints
 
 from ase import Atom
 from ase import Atoms
 
 
-
 class handler():
     def __init__(self):
-        x=0
+        #Default initialization of namelists
         self.c   = namelists.control.handler();
         self.s   =  namelists.system.handler();
         self.e   = namelists.electrons.handler();
         self.ions= namelists.ions.handler();
         self.cell= namelists.cell.handler();
         self.fcp = namelists.fcp.handler();
+        #Default initialization of cards
+        self.ae    = cards.atomic_species.handler();
+        self.kpts  = cards.kpoints.handler();
+        self.cp    = cards.cell_params.handler();
+        self.constr= cards.constraints.handler();
+        #Default initialization of cards
 
     def set_structure(self, structure  ):
         """
