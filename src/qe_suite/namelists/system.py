@@ -5,6 +5,8 @@ class handler:
     
     def __init__(self):
         self.options["ibrav"] = 0;
+        self.options["ntyp"] = 0;
+        self.options["nat"] = 0;
         self.celldm = None;
 
     def set_bravais_lattice(self, ibrav, celldm):
@@ -33,7 +35,7 @@ class handler:
             out+= k+"="+qe_io.format(opt[k])+"\n";
             for i,c in enumerate(self.celldm):
                 if c!=0:
-                    out+= "celldm("+qe_io.format(i)+")="+qe_io.format(c)+"\n";
+                    out+= "celldm("+qe_io.format(1+i)+")="+qe_io.format(c)+"\n";
 
         out += "/";
         return out;

@@ -35,7 +35,7 @@ class handler():
         symbols = structure.get_chemical_symbols();
         species = [ (s, Atom(s).mass, s+".UPF") for s in set(symbols)]
         self.s.options["nat"]  = len(symbols);
-        self.s.options["ntype"]= len(species);
+        self.s.options["ntyp"]= len(species);
 
         self.ae.set_atomic_species(species);
         self.ap.set_atomic_positions(structure);
@@ -96,6 +96,8 @@ class handler():
             path ( string) : 
         """
 
+        self.c.options["pseudo_dir"]=path+"/";
+
         with open(path+"/versions.yaml") as f:
             version = f.read().split(":")[-1].replace("\'","").replace(" ","").replace("\n","");
 
@@ -104,9 +106,10 @@ class handler():
             sp_info = json.loads(f.read());
 
         ae = self.ae;
-        species = [ (s,m ,path+"/"+sp_info[s]["filename"]) for s,m,sp in ae.get_atomic_species() ]
+        species = [ (s,m ,sp_info[s]["filename"]) for s,m,sp in ae.get_atomic_species() ]
         ae.set_atomic_species(species);
-
+        
+        
         if use_cutoff:
             cutoffs=[0,0];
             for s,m,sp in ae.get_atomic_species():
