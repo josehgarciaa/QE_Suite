@@ -6,9 +6,9 @@ class handler:
     
     def __init__(self):
         self.options["diagonalization"] = 'david';
-        self.options["conv_thr"] =   1.2e-9;
+        self.options["conv_thr"] =   4e-10;
         self.options["electron_maxstep"] = 200;
-        self.options["mixing_beta"] = 200;
+        self.options["mixing_beta"] = 4e-1;
 
     def text(self):
         out = "&ELECTRONS\n";

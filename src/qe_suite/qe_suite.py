@@ -24,6 +24,11 @@ class handler():
         #Default initialization of cards
         self.structure = None;
 
+    def set_state(insultator=False, magnetic=False ):
+        if insultator:
+            self.s.options["occupations"]="fixed";
+
+
     def set_structure(self, structure  ):
         """
         Set the atomic position and lattice vectors

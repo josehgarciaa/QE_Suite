@@ -7,6 +7,8 @@ class handler:
         self.options["ibrav"] = 0;
         self.options["ntyp"] = 0;
         self.options["nat"] = 0;
+        self.options["occupations"] = 'smearing'
+        self.options["smearing"] = 'cold'
         self.celldm = None;
 
     def set_bravais_lattice(self, ibrav, celldm):
@@ -18,6 +20,7 @@ class handler:
             ecutrho= 4*ecutwfc;
         self.options["ecutwfc"] = ecutwfc;
         self.options["ecutrho"] = ecutrho;
+
 
 
 
