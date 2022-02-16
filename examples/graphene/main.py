@@ -1,4 +1,4 @@
-import qesuite as qes
+import qe_suite as qes
 
 import qe_io 
 
