@@ -1,6 +1,10 @@
 [build-system]
 requires = [
     "setuptools>=42",
-    "wheel"
+    "json",
+    "numpy",
+    "ase",
+    "spglib",
+    "seekpath"
 ]
 build-backend = "setuptools.build_meta"
