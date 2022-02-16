@@ -1,4 +1,4 @@
-import format as f
+import qe_suite.format as f
 
 
 def format(x):
@@ -31,8 +31,3 @@ def load_cell(fname):
         data = f.remove_empty( data.split("\n") );
         data = [ list(map(float,f.remove_empty( x.split(" ")))) for x in data ];
     return data
-
-
-
-#import src._namelists.namelists as nls
-#import cards 

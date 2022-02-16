@@ -1,37 +1,26 @@
-import qe_io
+
 import json
-import symmetries
-import namelists.control
-import namelists.system
-import namelists.electrons
-import namelists.ions
-import namelists.cell
-import namelists.fcp
-import cards.atomic_positions
-import cards.atomic_species
-import cards.kpoints
-import cards.cell_params
-import cards.constraints
-
-from ase import Atom
-from ase import Atoms
-
+import qe_suite.symmetries as symmetries
+import qe_suite.io as qe_io
+from ase import Atom, Atoms
+from qe_suite.namelists import control, system, electrons, ions, cell, fcp
+from qe_suite.cards import atomic_positions, atomic_species, kpoints, cell_params, constraints 
 
 class handler():
     def __init__(self):
         #Default initialization of namelists
-        self.c   = namelists.control.handler();
-        self.s   = namelists.system.handler();
-        self.e   = namelists.electrons.handler();
-        self.ions= namelists.ions.handler();
-        self.cell= namelists.cell.handler();
-        self.fcp = namelists.fcp.handler();
+        self.c   = control.handler();
+        self.s   = system.handler();
+        self.e   = electrons.handler();
+        self.ions= ions.handler();
+        self.cell= cell.handler();
+        self.fcp = fcp.handler();
         #Default initialization of cards
-        self.ap    = cards.atomic_positions.handler();
-        self.ae    = cards.atomic_species.handler();
-        self.kpts  = cards.kpoints.handler();
-        self.cp    = cards.cell_params.handler();
-        self.constr= cards.constraints.handler();
+        self.ap    = atomic_positions.handler();
+        self.ae    = atomic_species.handler();
+        self.kpts  = kpoints.handler();
+        self.cp    = cell_params.handler();
+        self.constr= constraints.handler();
         #Default initialization of cards
         self.structure = None;
 

@@ -1,6 +1,6 @@
-import qesuite as qes
+import qe_suite as qes
 
-import qe_io 
+import qe_suite.io as qe_io
 
 syst = "Pd2Se4"
 xyz  = qe_io.load_xyz(syst+".xyz");
