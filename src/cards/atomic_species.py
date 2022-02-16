@@ -23,8 +23,6 @@ class handler:
     def get_atomic_species(self):
         return self.species;
 
-
-
     def text(self):
         return "\n"+self.key+"\n" + self.options[self.key];
 

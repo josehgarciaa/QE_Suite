@@ -65,11 +65,12 @@ class handler():
         return 0;
 
     def use_symmetries(self):
-        system, ibrav, spgnum, celldm = symmetries.get_brav_params( self.structure );
+        structure, ibrav, spgnum, celldm = symmetries.get_brav_params( self.structure );
         self.s.set_bravais_lattice(ibrav, celldm);
+        self.set_structure(structure);
         return 0;
 
-    def write_input_file(self, ofname ):
+    def write_input_file(self, ofname="out" ):
         """
         Write the input file for QESpresso
         """
@@ -89,7 +90,8 @@ class handler():
         text += self.ap.text();
         text += self.kpts.text();
 
-        print(text)
+        with open(ofname, 'w') as f:
+            f.write(text);
         return 0;
 
 
