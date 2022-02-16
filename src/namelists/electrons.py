@@ -14,7 +14,7 @@ class handler:
         out = "&ELECTRONS\n";
         for k,v in self.options.items(): 
             out+= k+"="+qe_io.format(v)+"\n";
-        out += "/";
+        out += "/\n";
         return out;
 
     def print(self):

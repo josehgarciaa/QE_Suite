@@ -5,6 +5,7 @@ import namelists.electrons
 import namelists.ions
 import namelists.cell
 import namelists.fcp
+import cards.atomic_positions
 import cards.atomic_species
 import cards.kpoints
 import cards.cell_params
@@ -18,12 +19,13 @@ class handler():
     def __init__(self):
         #Default initialization of namelists
         self.c   = namelists.control.handler();
-        self.s   =  namelists.system.handler();
+        self.s   = namelists.system.handler();
         self.e   = namelists.electrons.handler();
         self.ions= namelists.ions.handler();
         self.cell= namelists.cell.handler();
         self.fcp = namelists.fcp.handler();
         #Default initialization of cards
+        self.ap    = cards.atomic_positions.handler();
         self.ae    = cards.atomic_species.handler();
         self.kpts  = cards.kpoints.handler();
         self.cp    = cards.cell_params.handler();
@@ -39,15 +41,15 @@ class handler():
 
         """
         symbols = structure.get_chemical_symbols();
-        unique_symbols = [];
-        for s in symbols:
-            if s not in unique_symbols:
-                unique_symbols.append(s);
-
+        species = [ (s, Atom(s).mass, s+".UPF") for s in set(symbols)]
         self.s.options["nat"]  = len(symbols);
-        self.s.options["ntype"]= len(unique_symbols);
+        self.s.options["ntype"]= len(species);
 
-#        self.s.set_atoms(structure);
+        self.ae.set_atomic_species(species);
+        self.ap.set_atomic_positions(structure);
+
+
+
 #        scal_pos= structure.get_scaled_positions();
 #        symbols = structure.get_chemical_symbols();
 #        xyz = [ (s,x,y,z) for s,(x,y,z) in zip(symbols,scal_pos)]
@@ -98,6 +100,10 @@ class handler():
         if self.c.options["lfcp"]:
             text += "\n"+self.fcp.text();
 
+                
+        text += self.ae.text();
+        text += self.ap.text();
+        text += self.kpts.text();
 
 
         print(text)
