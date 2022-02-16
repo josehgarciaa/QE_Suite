@@ -1,4 +1,4 @@
-import qe_io 
+import qe_suite.io as qe_io 
 
 class handler:
     
