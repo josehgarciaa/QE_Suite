@@ -9,6 +9,7 @@ class handler:
         self.options["nat"] = 0;
         self.options["occupations"] = 'smearing'
         self.options["smearing"] = 'cold'
+        self.options["degauss"] = 1.46997236e-02
         self.celldm = None;
 
     def set_bravais_lattice(self, ibrav, celldm):
