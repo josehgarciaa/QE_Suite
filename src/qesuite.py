@@ -1,4 +1,6 @@
 import qe_io
+import json
+import symmetries
 import namelists.control
 import namelists.system
 import namelists.electrons
@@ -31,6 +33,7 @@ class handler():
         self.cp    = cards.cell_params.handler();
         self.constr= cards.constraints.handler();
         #Default initialization of cards
+        self.structure = None;
 
     def set_structure(self, structure  ):
         """
@@ -47,13 +50,7 @@ class handler():
 
         self.ae.set_atomic_species(species);
         self.ap.set_atomic_positions(structure);
-
-
-
-#        scal_pos= structure.get_scaled_positions();
-#        symbols = structure.get_chemical_symbols();
-#        xyz = [ (s,x,y,z) for s,(x,y,z) in zip(symbols,scal_pos)]
-#        self.s.set_atomic_positions(xyz);
+        self.structure = structure;
         return True;
 
     def set_calculation(self, calc  ):
@@ -68,21 +65,8 @@ class handler():
         return 0;
 
     def use_symmetries(self):
-
-
-        
-        #def get_ibrav(cell, brav_lat ):
-        #    if brav_lat== 'mP': #monoclinic
-        #        cdm1 = np.linalg.norm(cell[0] );
-        #        cdm2 = np.linalg.norm(cell[1] )/cdm1;
-        #        cdm3 = np.linalg.norm(cell[2] )/cdm1;
-        #        cdm4 = np.dot( cell[0], cell[1])/cdm1/cdm2;
-        #        ibrav= 12
-
-
-        """
-        Analyze the symmetries in the crystal strturess and force the cell to respect it
-        """
+        system, ibrav, spgnum, celldm = symmetries.get_brav_params( self.structure );
+        self.s.set_bravais_lattice(ibrav, celldm);
         return 0;
 
     def write_input_file(self, ofname ):
@@ -105,12 +89,11 @@ class handler():
         text += self.ap.text();
         text += self.kpts.text();
 
-
         print(text)
         return 0;
 
 
-    def use_SSSP(self, type="efficiency", path="."):
+    def use_SSSP(self, functional="PBEsol", target="precision", path="./SSSP", use_cutoff=True):
         """
         Use the standard Solid State Pseudo Potential (SSSP). The type define whereas you want to use efficiency or efficiency 
         or precision. 
@@ -121,6 +104,26 @@ class handler():
             type ( string) : 
             path ( string) : 
         """
+
+        with open(path+"/versions.yaml") as f:
+            version = f.read().split(":")[-1].replace("\'","").replace(" ","").replace("\n","");
+
+        dbfname = path+"/SSSP_"+version+"_"+functional+"_"+target+".json";
+        with open(dbfname) as f:
+            sp_info = json.loads(f.read());
+
+        ae = self.ae;
+        species = [ (s,m ,path+"/"+sp_info[s]["filename"]) for s,m,sp in ae.get_atomic_species() ]
+        ae.set_atomic_species(species);
+
+        if use_cutoff:
+            cutoffs=[0,0];
+            for s,m,sp in ae.get_atomic_species():
+                sp = sp_info[s];
+                keys = ( "cutoff_wfc", "cutoff_rho");
+                cutoffs = [v if sp[k]<v else sp[k] for k,v in zip( keys,cutoffs )];
+                self.s.set_cutoff(*cutoffs);
+
         return 0;
 
 
@@ -137,23 +140,11 @@ def generate_from_xyz(xyz, cell, magnetic=False, pbc=(True, True,True) ):
         preiodic (bool): A tuple that indicates the periodicity directions. Default (True, True, True ).
     """
     #Convert the xyz tuple into an atom object
-    structure    = Atoms( [ Atom(*a) for a in xyz ], cell=cell, pbc=pbc ) ;
+    structure    = Atoms( [ Atom(*a) for a in xyz ] ) ;
+    structure.set_cell(cell);
+    structure.set_pbc(pbc);
     #Initialize the QESuite handler
     qes_h = handler();
     qes_h.set_structure( structure = structure );
 
     return qes_h;
-
-
-
-#c = control.handler();
-#print( c.options.keys() )
-#q = qes.handler();
-
-#print( q.c.options.keys() )
-
-#import json
-#fname ="SSSP_1.1.2_PBEsol_precision.json";
-#with open(fname) as f:
-#    pseudo_potentials = json.loads(f.read());
-

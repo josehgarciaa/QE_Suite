@@ -15,9 +15,15 @@ class handler:
         self.options[self.key]=None;
         
     def set_atomic_species(self, species):
+        self.species = species;
         self.options[self.key]="";
-        for s,m,ps in species:
+        for s,m,ps in self.species:
             self.options[self.key]+="{} {} {} \n".format(s,m,ps);
+
+    def get_atomic_species(self):
+        return self.species;
+
+
 
     def text(self):
         return "\n"+self.key+"\n" + self.options[self.key];
