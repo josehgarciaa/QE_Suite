@@ -48,7 +48,7 @@ class handler():
             self.s.options["assume_isolated"]='2D';
             #Define the heigh using the guidelines with QE
             zs     = [ z for (x,y,z) in structure.get_positions() ];
-            delta_z= np.min( 15, 7.0 + np.max(zs)- np.min(zs) ); #Angstrong
+            delta_z= np.min( [15, 7.0 + np.max(zs)- np.min(zs)] ); #Angstrong
             cell   = structure.get_cell(); 
             cell[2]= [0,0,delta_z];
             structure.set_cell(cell);
