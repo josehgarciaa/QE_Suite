@@ -24,9 +24,9 @@ def get_brav_params( system ):
     system.set_cell(cell);
     system.set_scaled_positions(spos);
     system.set_atomic_numbers(anum); 
-    cell = system.get_cell();
+    cell = system.get_cell()*const.Ang2Bohr;
 
-    celldm[0] = np.linalg.norm(cell[0] )*const.Ang2Bohr;
+    celldm[0] = np.linalg.norm(cell[0] );
     if brav_lat== 'hP': #monoclinic
         celldm[2] = np.linalg.norm(cell[2] )/celldm[0];
         ibrav= 4;
