@@ -47,18 +47,18 @@ class handler():
         if ( self.structure.pbc == (True,True,False) ).all() :
             self.s.options["assume_isolated"]='2D';
             #Define the heigh using the guidelines with QE
-            zs     = [ z for (x,y,z) in structure.get_positions() ];
+            zs     = [ z for (x,y,z) in self.structure.get_positions() ];
             delta_z= np.max( [24, 7.0 + np.max(zs)- np.min(zs)] ); #Angstrong
-            cell   = structure.get_cell(); 
+            cell   = self.structure.get_cell(); 
             cell[2]= [0,0,delta_z];
-            structure.set_cell(cell);
+            self.structure.set_cell(cell);
+            print(self.structure.cell)
 
             #Define the kpoints
-            self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=structure.pbc );
+            self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=self.structure.pbc );
 
         self.ae.set_atomic_species(species);
-        self.ap.set_atomic_positions(structure);
-        self.structure = structure;
+        self.ap.set_atomic_positions(self.structure);
 
         return True;
 
