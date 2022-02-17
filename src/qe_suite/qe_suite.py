@@ -52,8 +52,6 @@ class handler():
             cell   = self.structure.get_cell(); 
             cell[2]= [0,0,delta_z];
             self.structure.set_cell(cell);
-            print(self.structure.cell)
-
             #Define the kpoints
             self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=self.structure.pbc );
 
