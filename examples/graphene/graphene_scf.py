@@ -6,7 +6,7 @@ syst = "C2"
 xyz  = qe_io.load_xyz(syst+".xyz");
 cell = qe_io.load_cell(syst+".uc");
 
-qes_handler =  qes.generate_from_xyz(xyz=xyz, cell=cell);
+qes_handler =  qes.generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True);
 
 qes_handler.set_calculation("scf");
 qes_handler.use_symmetries();

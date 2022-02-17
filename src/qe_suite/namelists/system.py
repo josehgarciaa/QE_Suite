@@ -22,9 +22,6 @@ class handler:
         self.options["ecutwfc"] = ecutwfc;
         self.options["ecutrho"] = ecutrho;
 
-
-
-
     def text(self):
         opt = self.options;
         out = "&SYSTEM\n";

@@ -1,5 +1,6 @@
 
 import json
+import numpy as np
 import qe_suite.symmetries as symmetries
 import qe_suite.io as qe_io
 from ase import Atom, Atoms
@@ -21,15 +22,15 @@ class handler():
         self.kpts  = kpoints.handler();
         self.cp    = cell_params.handler();
         self.constr= constraints.handler();
-        #Default initialization of cards
+        
         self.structure = None;
+        self.pbc = (True, True, True);
 
-    def set_state(insultator=False, magnetic=False ):
+    def set_state(self,two_dimensional = False, insultator=False, magnetic=False ):
         if insultator:
             self.s.options["occupations"]="fixed";
 
-
-    def set_structure(self, structure  ):
+    def set_structure(self, structure, two_dimensional = False  ):
         """
         Set the atomic position and lattice vectors
 
@@ -37,14 +38,29 @@ class handler():
             structure ( Atoms) : A tuple containing (cell, positions, numbers)n array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
 
         """
+        self.structure = structure;
         symbols = structure.get_chemical_symbols();
         species = [ (s, Atom(s).mass, s+".UPF") for s in set(symbols)]
         self.s.options["nat"]  = len(symbols);
         self.s.options["ntyp"]= len(species);
 
+        if ( self.structure.pbc == (True,True,False) ).all() :
+            self.s.options["assume_isolated"]='2D';
+            #Define the heigh using the guidelines with QE
+            zs     = [ z for (x,y,z) in structure.get_positions() ];
+            delta_z= 7.0 + np.max(zs)- np.min(zs); #Angstrong
+            cell   = structure.get_cell(); 
+            cell[2]= [0,0,delta_z];
+            structure.set_cell(cell);
+
+            #Define the kpoints
+            self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=structure.pbc );
+
+
         self.ae.set_atomic_species(species);
         self.ap.set_atomic_positions(structure);
         self.structure = structure;
+
         return True;
 
     def set_calculation(self, calc  ):
@@ -127,7 +143,7 @@ class handler():
 
 
 
-def generate_from_xyz(xyz, cell, magnetic=False, pbc=(True, True,True) ):
+def generate_from_xyz(xyz, cell, two_dimensional = False, magnetic=False ):
     """
     Generate a QESuite handler using the structural informaiton
     in the form of a xyz and cell file. 
@@ -141,9 +157,12 @@ def generate_from_xyz(xyz, cell, magnetic=False, pbc=(True, True,True) ):
     #Convert the xyz tuple into an atom object
     structure    = Atoms( [ Atom(*a) for a in xyz ] ) ;
     structure.set_cell(cell);
-    structure.set_pbc(pbc);
+
+    if two_dimensional:
+        structure.set_pbc( (True, True, False) );
+
     #Initialize the QESuite handler
     qes_h = handler();
-    qes_h.set_structure( structure = structure );
+    qes_h.set_structure( structure = structure, two_dimensional=two_dimensional );
 
     return qes_h;
