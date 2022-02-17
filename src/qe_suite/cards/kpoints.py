@@ -27,7 +27,7 @@ class handler:
             s.options["K_POINTS"]=s.kptype+"\n"+str(len(s.kpoints));
             for kp in s.kpoints:
                 s.options["K_POINTS"]+="\n {} {} {} 1 ".format(*list(kp));
-            print(s.options["K_POINTS"])
+
     def get_kpoints(self):
         s = self;
         if s.kptype == "automatic":

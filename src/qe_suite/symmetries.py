@@ -60,6 +60,5 @@ def get_band_path( system ):
     path  = [ (l1,l2)  for l1,l2 in path if (l1 in labels) and (l2 in labels) ]
 
     density = np.ones(len(path), dtype=int)*20;
-    print(density, coords, path)
     kpath  = { (l1,l2):np.linspace(coords[l1],coords[l2],n,endpoint=False )  for (l1,l2),n in zip(path,density) }
     return kpath;
