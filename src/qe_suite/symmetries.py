@@ -1,7 +1,7 @@
 import seekpath as seek
 import spglib as spg
 import numpy as np
-
+import qe_suite.constants as const
 
 def system_to_structure(system):
     structure = (system.get_cell(),
@@ -26,7 +26,7 @@ def get_brav_params( system ):
     system.set_atomic_numbers(anum); 
     cell = system.get_cell();
 
-    celldm[0] = np.linalg.norm(cell[0] );
+    celldm[0] = np.linalg.norm(cell[0] )*const.Ang2Bohr;
     if brav_lat== 'hP': #monoclinic
         celldm[2] = np.linalg.norm(cell[2] )/celldm[0];
         ibrav= 4;
