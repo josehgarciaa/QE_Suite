@@ -3,7 +3,14 @@ import spglib as spg
 import numpy as np
 import qe_suite.constants as const
 
-
+def Rot_toZ(r):
+    ur= r/np.linalg.norm(r);
+    theta = np.arccos( np.dot( ur, [0,0,1] ) );
+    phi   = np.arctan( ur[1]/ur[0] ) if ur[0]!=0 else np.pi/2;
+    Ru = np.array([ [ np.cos(phi)*np.cos(theta),np.sin(phi)*np.cos(theta),-np.sin(theta)],
+                    [-np.sin(phi)              ,np.cos(phi)              , 0],
+                    [ np.cos(phi)*np.sin(theta),np.sin(phi)*np.sin(theta),np.cos(theta)]]);
+    return Ru;
 
 
 def system_to_structure(system):
