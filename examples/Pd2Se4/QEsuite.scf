@@ -1,0 +1,47 @@
+&CONTROL
+calculation='scf'
+outdir='./qesuite_out'
+etot_conv_thr=0.0001
+forc_conv_thr=0.001
+pseudo_dir='../SSSP/'
+lfcp=.FALSE.
+tprnfor=.TRUE.
+tstress=.TRUE.
+verbosity='high'
+/
+&SYSTEM
+ntyp=2
+nat=6
+occupations='smearing'
+smearing='cold'
+degauss=0.0146997236
+assume_isolated='2D'
+ecutwfc=50.0
+ecutrho=240.0
+ibrav=-12
+celldm(1)=22.67671349135252
+celldm(2)=0.47916666666666663
+celldm(3)=0.49333333333333335
+celldm(4)=1.388548229618323e-15
+/
+&ELECTRONS
+diagonalization='david'
+conv_thr=4e-10
+electron_maxstep=200
+mixing_beta=0.4
+/
+
+ATOMIC_SPECIES
+Pd 106.42 Pd_ONCV_PBEsol-1.0.upf 
+Se 78.971 se_pbesol_v1.uspp.F.UPF 
+
+ATOMIC_POSITIONS crystal
+Pd 0.5 0.5 0.24241571272397003 
+Pd 0.5 0.0 0.0 
+Se 0.43805350334124005 0.11070846883705757 0.3005275398840012 
+Se 0.56194649665876 0.6107084688370575 0.4267195982879088 
+Se 0.56194649665876 0.8892915311629424 0.1843038855639388 
+Se 0.43805350334124005 0.38929153116294246 0.05811182716003122 
+
+K_POINTS automatic
+10 10 1 1 1 1 

@@ -3,6 +3,9 @@ import spglib as spg
 import numpy as np
 import qe_suite.constants as const
 
+
+
+
 def system_to_structure(system):
     structure = (system.get_cell(),
                  system.get_scaled_positions(),
@@ -21,6 +24,13 @@ def get_brav_params( system ):
     brav_lat= kp_path["bravais_lattice"];
     spgnum  = kp_path["spacegroup_number"];
 
+    non_per_dir = np.argmax(np.linalg.norm(cell,axis=0));
+    zvec = cell[non_per_dir];
+
+    np.dot( zvec, [1,0,0])
+    np.dot( zvec, [0,0,1])
+    
+    print("new_cell", non_per_dir )
     system.set_cell(cell);
     system.set_scaled_positions(spos);
     system.set_atomic_numbers(anum); 
