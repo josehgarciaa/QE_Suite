@@ -1,6 +1,3 @@
-from ase import Atom
-from ase import Atoms
-
 class handler:
     """
     The species class storages and handle everything relate to different atomic species in the simulation.
@@ -21,13 +18,16 @@ class handler:
         if kptype == "automatic":
             s.kpoints, s.shifts = kpoints
             s.kpoints =[ k if per else 1 for per,k in zip(pbc,s.kpoints) ];
-
-            s.options["K_POINTS"]=s.kptype+"\n";
-            for k in s.kpoints:
-                s.options["K_POINTS"]+=str(k)+" ";
-            for k in s.shifts:
-                s.options["K_POINTS"]+=str(k)+" ";
-
+            s.options["K_POINTS"]=s.kptype+"\n{} {} {} {} {} {} ".format(*s.kpoints,*s.shifts);
+        if kptype == "crystal_b":
+            s.kpoints = [];
+            for k,v in kpoints.items():
+                s.kpoints+= list(v)
+            #Save kpoints as text
+            s.options["K_POINTS"]=s.kptype+"\n"+str(len(s.kpoints));
+            for kp in s.kpoints:
+                s.options["K_POINTS"]+="\n {} {} {} 1 ".format(*list(kp));
+            print(s.options["K_POINTS"])
     def get_kpoints(self):
         s = self;
         if s.kptype == "automatic":

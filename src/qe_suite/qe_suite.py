@@ -77,6 +77,12 @@ class handler():
         structure, ibrav, spgnum, celldm = symmetries.get_brav_params( self.structure );
         self.s.set_bravais_lattice(ibrav, celldm);
         self.set_structure(structure);
+        
+        if self.c.options["calculation"]=="bands":
+            kpoints = symmetries.get_band_path( self.structure );
+            self.kpts.set_kpoints( kptype= "crystal_b", kpoints= kpoints);
+            
+
         return 0;
 
     def write_input_file(self, ofname="out" ):
