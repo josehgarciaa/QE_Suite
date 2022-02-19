@@ -46,13 +46,6 @@ class handler():
 
         if ( self.structure.pbc == (True,True,False) ).all() :
             self.s.options["assume_isolated"]='2D';
-            #Define the heigh using the guidelines with QE
-            zs     = [ z for (x,y,z) in self.structure.get_positions() ];
-            delta_z= np.max( [12, 7 + np.max(zs)- np.min(zs)] ); #Angstrong
-            cell   = self.structure.get_cell(); 
-            cell[2]= [0,0,delta_z];
-            self.structure.set_cell(cell);
-            #Define the kpoints
             self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=self.structure.pbc );
 
         self.ae.set_atomic_species(species);
@@ -75,11 +68,10 @@ class handler():
         structure, ibrav, spgnum, celldm = symmetries.get_brav_params( self.structure );
         self.s.set_bravais_lattice(ibrav, celldm);
         self.set_structure(structure);
-        
+
         if self.c.options["calculation"]=="bands":
             kpoints = symmetries.get_band_path( self.structure );
             self.kpts.set_kpoints( kptype= "crystal_b", kpoints= kpoints);
-            
 
         return 0;
 
