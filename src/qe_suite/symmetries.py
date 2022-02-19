@@ -4,6 +4,8 @@ import spglib as spg
 import numpy as np
 import qe_suite.constants as const
 
+from  ase.spacegroup import symmetrize
+
 def get_2D_orientation( system ):
     cell = np.array(system.get_cell());
     largest_vector_pos = np.argmax( np.linalg.norm(cell, axis=1) );
@@ -58,11 +60,8 @@ def standard_2D_form(system):
     spos = system.get_scaled_positions();
     system.set_cell(np.dot(trans,np.dot( cell, trans.T)), scale_atoms=True);
     print(np.array(cell),"-->", np.array(system.get_cell()) ); 
-
     if not is_standard_2D_orientation( system ):
         print("The cell was not properly set in the stanarda 2D form")
-
-
     return system;
 
 def system_to_structure(system):
@@ -73,19 +72,14 @@ def system_to_structure(system):
     return structure;
 
 def get_brav_params( system ):
+
+    symm  = symmetrize.refine_symmetry(system);
+    kp_path = seek.get_path( system_to_structure(system) , symprec=1e-5);
+    brav_lat= kp_path["bravais_lattice"];
+    spgnum  = kp_path["spacegroup_number"];
     ibrav = 0;
     spgnum=0;
     celldm= np.zeros(6);
-    structure = system_to_structure(system);
-    structure = spg.standardize_cell(structure, symprec=1e-2);
-    kp_path = seek.get_path( structure , symprec=1e-5);
-    cell,spos,anum = structure;
-    brav_lat= kp_path["bravais_lattice"];
-    spgnum  = kp_path["spacegroup_number"];
-
-    system.set_cell(cell);
-    system.set_scaled_positions(spos);
-    system.set_atomic_numbers(anum);
 
     #For 2D system use orient the plane vector along z
     if ( system.pbc == (True,True,False) ).all(): 
