@@ -95,3 +95,41 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max
     a_cell , b_cell = min_scatms
     return (cell.Cell(a_cell),cell.Cell(b_cell)), min_diff,min_ds
 
+def match_cells(a_structure, b_structure):
+    a_cell = a_structure.get_cell() ;
+    b_cell = a_structure.get_cell() ;
+    scal   = np.linalg.norm(a_cell, axis=0)/np.linalg.norm(b_cell, axis=0);
+    b_structure.set_cell(b_cell*scal);
+    return a_structure, b_structure;
+
+
+def get_atoms_in_cell(structure,cell,shift=[0,0,0]):
+    icell    = structure.get_cell(); 
+    numbers  = structure.get_atomic_numbers();
+    scal_pos = structure.get_scaled_positions();
+    cart_pos = icell.cartesian_positions( scal_pos + shift );
+    scal_pos = cell.scaled_positions ( cart_pos  ) ;
+    allowed  =  np.all( (scal_pos < [1,1,1])*(scal_pos >= [0,0,0]),axis=1 );
+    return list(scal_pos[allowed]), list(numbers[allowed]);
+
+def create_expand_supercell(structure, sc_cell ):
+    sc_spos,sc_anum = [], []
+    zero= np.array([0,0,0],dtype=int);  
+    xvec= np.copy(zero);
+    while( True ):
+        natoms= len(sc_spos);
+        yvec  = np.copy(zero);
+        while( True  ):
+            scell_pos,scell_num= get_atoms_in_cell(structure,sc_cell,shift= xvec + yvec);
+            if len(scell_pos)==0:
+                break;
+            sc_spos.append(scell_pos);
+            sc_anum.append(scell_num);
+            yvec += [0,1,0];
+        if natoms == len(sc_spos):
+            break;
+        xvec += [1,0,0];
+
+    sc_anum = [n for nums in sc_anum for n in nums];
+    sc_spos = [p for spos in sc_spos for p in spos];
+    return Atoms( numbers=sc_anum, scaled_positions=sc_spos, cell=sc_cell, pbc=structure.pbc );
