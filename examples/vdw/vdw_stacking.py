@@ -20,10 +20,6 @@ b_structure = b_qes_h.get_structure();
 
 min_scatms, min_diff,min_ds = vdw.get_vdw_cell( a_structure, b_structure, max_strain=0.1, strain_cell="a", max_size=30 );
 
-import numpy as np
-from ase import Atoms
-
-
 sccell_a,sccell_b =min_scatms
 structure = a_structure;
 sc_cell= sccell_a; 

@@ -1,6 +1,8 @@
 import numpy as np
 from ase.build.niggli import niggli_reduce_cell
 from ase import cell
+from ase import Atoms
+
 from fractions import Fraction
 
 def get_cells_rational_ratio(a_cell,b_cell, max_size=10):
