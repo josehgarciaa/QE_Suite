@@ -74,6 +74,7 @@ def system_to_structure(system):
 def get_brav_params( system ):
 
     symm  = symmetrize.refine_symmetry(system);
+    print(symm)
     kp_path = seek.get_path( system_to_structure(system) , symprec=1e-5);
     brav_lat= kp_path["bravais_lattice"];
     spgnum  = kp_path["spacegroup_number"];

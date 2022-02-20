@@ -31,8 +31,8 @@ mixing_beta=0.4
 /
 
 ATOMIC_SPECIES
-Se 78.971 se_pbesol_v1.uspp.F.UPF 
 Pd 106.42 Pd_ONCV_PBEsol-1.0.upf 
+Se 78.971 se_pbesol_v1.uspp.F.UPF 
 
 ATOMIC_POSITIONS crystal
 Pd 0.5000400592728226 0.9999999998384134 0.4999920940575113 
