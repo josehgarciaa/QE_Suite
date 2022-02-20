@@ -1,3 +1,4 @@
+import numpy as np
 from ase.build.niggli import niggli_reduce_cell
 from ase import cell
 from fractions import Fraction
@@ -28,17 +29,17 @@ def get_cells_rational_ratio(a_cell,b_cell, max_size=10):
 def divisors(n):
     return [ i for i in range(1,n+1) if n%i==0 ];
 
-#Citation: Journal of Applied Physics 55, 378 (1984); doi: 10.1063/1.333084
-#We are building a matrix that construct a super cell with area equal to n times
-#he unit cell
-#    | k  j 0|
-# A =| 0  m 0|
-#    | 0  0 1|
-# that satisfy the constrains
-# k*m = n. Since we want n/m to be an integer, the ms are the divisors of n.
-# k,m > 0
-# 0<= j <= m-1 
 def get_compatible_supercell_transformations(n):
+    #Citation: Journal of Applied Physics 55, 378 (1984); doi: 10.1063/1.333084
+    #We are building a matrix that construct a super cell with area equal to n times
+    #he unit cell
+    #    | k  j 0|
+    # A =| 0  m 0|
+    #    | 0  0 1|
+    # that satisfy the constrains
+    # k*m = n. Since we want n/m to be an integer, the ms are the divisors of n.
+    # k,m > 0
+    # 0<= j <= m-1 
     ms = divisors(n);
     ks = [n//m for m in ms];
     js_m= [[j for j in range(m)] for m in ms ];
@@ -46,45 +47,51 @@ def get_compatible_supercell_transformations(n):
     return np.array(Us);
 
 def get_closest_cells( a_cell, b_cell, max_size=10):
-    (a_n,b_n) ,ratio,err =  get_cells_rational_ratio( a_cell,b_cell,max_size=max_size);
+
+
+    (a_n,b_n) ,ratio,err =  get_cells_rational_ratio( a_cell,b_cell,max_size=max_size );
     if a_n == 0 or b_n ==0:
         return None;
 
     niggli_cells =[];
-    for cell in (a_cell,b_cell):
-        comp_cells = get_compatible_supercell_transformations(a_n).dot(a_cell);
+    for n,cell in zip( (a_n,b_n), (a_cell,b_cell) ):
+        comp_cells = get_compatible_supercell_transformations(n).dot(cell);
         niggli_cells.append([ niggli_reduce_cell(sc)[0] for sc in comp_cells]);
-    
+
     amin,bmin=None,None 
     min_diff = np.inf;
-    nig_a, nig_b = np.array(niggli_cells);
+    nig_a, nig_b = [ np.array(x,dtype=float) for x in niggli_cells];
     for ia,na in enumerate(nig_a):
         for ib,nb in enumerate(nig_b):
-            diff = np.linalg.norm( (na-nb)[:2,:2])
-            if diff <min_diff:
-                min_diff= diff;
-                amin,bmin = (ia,ib)
+            diff = np.linalg.norm( (na-nb)[:2,:2]);
+            if diff < min_diff:
+                min_diff = diff;
+                amin,bmin= (ia,ib)
     return (nig_a[amin],nig_b[bmin]),min_diff;
 
 
-def get_vdw_cell( a_atoms, b_atoms, max_strain=0.2, strain_cell="a", max_size=10 ):
-    a_icell,b_icell = a_atoms,b_atoms;
+def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max_size=10 ):
+    a_icell,b_icell = a_structure.get_cell(),b_structure.get_cell();
     min_diff,min_ds,min_scatms = np.inf,np.inf,None;
     
+    #Brute force scanning of strain
     for ds in np.linspace(-max_strain,max_strain,100):
         a_cell,b_cell = a_icell,b_icell;
 
         strain = np.diag([1+ds,1+ds,1]);
         if strain_cell == "a":
-            a_cell = strain.dot(a_icell);
+            a_cell = strain.dot(a_cell);
         if strain_cell == "b":
-            b_cell = strain.dot(b_icell);
+            b_cell = strain.dot(b_cell);
 
         closest_cells = get_closest_cells( a_cell, b_cell, max_size=max_size);
-        if closest_cells is not None:
-            sc_atoms, diff= closest_cells;
-            if diff <= min_diff and abs(ds)< abs(min_ds):
-                min_scatms, min_diff,min_ds = sc_atoms,diff,ds;
+        if closest_cells is None:
+            return None;
+        
+        sc_atoms, diff= closest_cells;
+        if diff <= min_diff and abs(ds)< abs(min_ds):
+            min_scatms, min_diff,min_ds = sc_atoms,diff,ds;
 
-    return min_scatms, min_diff,min_ds
+    a_cell , b_cell = min_scatms
+    return (cell.Cell(a_cell),cell.Cell(b_cell)), min_diff,min_ds
 

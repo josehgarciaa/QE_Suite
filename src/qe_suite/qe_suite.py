@@ -53,6 +53,9 @@ class handler():
 
         return True;
 
+    def get_structure(self):
+        return self.structure;
+
     def set_calculation(self, calc  ):
         """
         Defines the calculation to be performed. This flag will initialize different options required for the calculation
@@ -161,3 +164,4 @@ def generate_from_xyz(xyz, cell, two_dimensional = False, magnetic=False ):
     qes_h.set_structure( structure = structure, two_dimensional=two_dimensional );
 
     return qes_h;
+
