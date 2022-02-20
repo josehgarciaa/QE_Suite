@@ -35,7 +35,7 @@ class handler:
         else:
             out+= k+"="+qe_io.format(opt[k])+"\n";
             for i,c in enumerate(self.celldm):
-                if c!=0:
+                if c is not None:
                     out+= "celldm("+qe_io.format(1+i)+")="+qe_io.format(c)+"\n";
 
         out += "/";

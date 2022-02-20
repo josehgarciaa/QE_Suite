@@ -80,7 +80,7 @@ def get_brav_params( system ):
     spgnum  = kp_path["spacegroup_number"];
     ibrav = 0;
     spgnum=0;
-    celldm= np.zeros(6);
+    celldm= [None]*6;
 
     #For 2D system use orient the plane vector along z
     if ( system.pbc == (True,True,False) ).all(): 

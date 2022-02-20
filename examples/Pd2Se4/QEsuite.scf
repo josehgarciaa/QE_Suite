@@ -22,6 +22,7 @@ ibrav=12
 celldm(1)=10.865925214606417
 celldm(2)=1.0295652173913041
 celldm(3)=2.861043478260869
+celldm(4)=0.0
 /
 &ELECTRONS
 diagonalization='david'
