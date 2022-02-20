@@ -102,7 +102,7 @@ def match_cells(a_structure, b_structure):
     b_cell = a_structure.get_cell() ;
     scal   = np.linalg.norm(a_cell, axis=0)/np.linalg.norm(b_cell, axis=0);
     b_structure.set_cell(b_cell*scal);
-    return a_structure, b_structure;
+    return (a_structure, b_structure), scal;
 
 
 def get_atoms_in_cell(structure,cell,shift=[0,0,0]):

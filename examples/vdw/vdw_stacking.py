@@ -18,10 +18,8 @@ b_qes_h =  qes.generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True);
 a_structure = a_qes_h.get_structure();
 b_structure = b_qes_h.get_structure();
 
-min_scatms, min_diff,min_ds = vdw.get_vdw_cell( a_structure, b_structure, max_strain=0.1, strain_cell="a", max_size=30 );
+min_scatms, min_diff,min_ds= vdw.get_vdw_cell( a_structure, b_structure, max_strain=0.1, strain_cell="a", max_size=30 );
+(sccell_a,sccell_b),scal   = vdw.match_cells(a_structure, b_structure)
 
-sccell_a,sccell_b =min_scatms
-structure = a_structure;
-sc_cell= sccell_a; 
 
 
