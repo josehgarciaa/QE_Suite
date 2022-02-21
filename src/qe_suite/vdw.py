@@ -120,27 +120,36 @@ def get_closest_cells( a_cell, b_cell, max_size=10, tol=1e-2):
     return (a_ncells[a_idx],b_ncells[b_idx]),diff_matrix[a_idx, b_idx];
     
 
-def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max_size=10, max_area=100 ):
-    #Brute force scanning of strain
-    min_diff,min_ds,min_ab_scells = np.inf,np.inf,None;
-    for ds in np.linspace(-max_strain,max_strain,100):
-        a_cell,b_cell = a_structure.get_cell(),b_structure.get_cell();
+def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="b", max_size=10, max_area=100 ):
 
-        strain = np.diag([1+ds,1+ds,1]);
-        if strain_cell == "a":
-            a_cell = strain.dot(a_cell);
-        if strain_cell == "b":
-            b_cell = strain.dot(b_cell);
+    if strain_cell=="a":
+        #invert since the algorithm will always strain b
+        a_structure, b_structure= b_structure, a_structure
 
-        closest_cells = get_closest_cells( a_cell, b_cell, max_size=max_size);
+    from scipy.optimize import differential_evolution
+    a_cell,b_cell = a_structure.get_cell(),b_structure.get_cell();
+    def diff(x):
+        ds= x[0]
+        S = np.diag([1+ds,1+ds,1]);
+        closest_cells = vdw.get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
         if closest_cells is None:
-            return None;        
-        ab_scells, diff= closest_cells;
-        if diff <= min_diff and abs(ds)< abs(min_ds):
-             min_ab_scells,min_diff,min_ds = ab_scells,diff,ds;
+            return np.inf;
+        ab_scells, diff= closest_cells
+        return diff
+    bounds = [(-max_strain,max_strain)]
+    res = differential_evolution(diff, bounds,  polish=True );
+    opt_strain = 1+res.x[0];
+    S = np.diag([opt_strain,opt_strain,1]);
 
-    min_ab_scell = list(map(cell.Cell,min_ab_scells));
-    return min_ab_scell, min_diff,min_ds
+    closest_cells = vdw.get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
+    opt_ab_scells, opt_diff= closest_cells
+    opt_a,opt_b = list(map(vdw.convert_to_cell,opt_ab_scells));
+
+    if strain_cell == "a":
+        #invert the resulting cell since the algorithm assumed strained b
+        opt_a,opt_b = opt_b,opt_a;
+
+    return opt_ab_scells, opt_diff,opt_strain
 
 def match_cells(a_structure, b_structure):
     a_cell = a_structure.get_cell() ;
