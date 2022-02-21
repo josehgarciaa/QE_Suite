@@ -31,3 +31,11 @@ def load_cell(fname):
         data = f.remove_empty( data.split("\n") );
         data = [ list(map(float,f.remove_empty( x.split(" ")))) for x in data ];
     return data
+
+
+def write_xyz(xyz, ofname):
+    with open(ofname, "w") as f:
+        f.write( str(len(xyz))+"\n\n")
+        for s,p in xyz:
+            f.write("{} {} {} {} \n".format(s,*p) )
+    return ;

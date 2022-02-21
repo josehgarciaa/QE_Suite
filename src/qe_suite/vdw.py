@@ -46,39 +46,34 @@ def get_compatible_supercell_transformations(n):
     ks = [n//m for m in ms];
     js_m= [[j for j in range(m)] for m in ms ];
     Us = [ [[k,j,0],[0,m,0],[0,0,1]] for m,k,js in zip(ms,ks,js_m) for j in js] 
-    return np.array(Us);
+    return np.array(Us, dtype=int);
 
 def get_closest_cells( a_cell, b_cell, max_size=10):
-
-
     (a_n,b_n) ,ratio,err =  get_cells_rational_ratio( a_cell,b_cell,max_size=max_size );
     if a_n == 0 or b_n ==0:
         return None;
 
-    niggli_cells =[];
-    for n,cell in zip( (a_n,b_n), (a_cell,b_cell) ):
-        comp_cells = get_compatible_supercell_transformations(n).dot(cell);
-        niggli_cells.append([ niggli_reduce_cell(sc)[0] for sc in comp_cells]);
+    def niggli_cell(cell):
+        #the [0] returns the cell and [1] returns the transformation, that we don't want
+        return niggli_reduce_cell(cell)[0];
 
-    amin,bmin=None,None 
-    min_diff = np.inf;
-    nig_a, nig_b = [ np.array(x,dtype=float) for x in niggli_cells];
-    for ia,na in enumerate(nig_a):
-        for ib,nb in enumerate(nig_b):
-            diff = np.linalg.norm( (na-nb)[:2,:2]);
-            if diff < min_diff:
-                min_diff = diff;
-                amin,bmin= (ia,ib)
-    return (nig_a[amin],nig_b[bmin]),min_diff;
+    #Compute the set of possible transformations, its correspinding cells, and their maximally reduce niggli form
+    a_trans,b_trans  = [ get_compatible_supercell_transformations(n) for n in (a_n,b_n) ]
+    a_scells,b_scells= [ trans.dot(cell) for trans,cell in zip( (a_trans,b_trans),(a_cell, b_cell))]
+    a_ncells,b_ncells= [ np.array(list(map(niggli_cell,scell))) for scell in (a_scells,b_scells)];
 
+    #Construct a difference matrix and get the minimum index
+    diff_matrix =  np.array([ [ np.linalg.norm(a_ncell - b_ncell) for b_ncell in b_ncells] for a_ncell in a_ncells])
+    a_idx, b_idx= np.unravel_index(np.argmin(diff_matrix, axis=None), diff_matrix.shape)
+
+    return (a_ncells[a_idx],b_ncells[b_idx]),diff_matrix[a_idx, b_idx];
+    
 
 def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max_size=10 ):
-    a_icell,b_icell = a_structure.get_cell(),b_structure.get_cell();
-    min_diff,min_ds,min_scatms = np.inf,np.inf,None;
-    
     #Brute force scanning of strain
+    min_diff,min_ds,min_ab_scells = np.inf,np.inf,None;
     for ds in np.linspace(-max_strain,max_strain,100):
-        a_cell,b_cell = a_icell,b_icell;
+        a_cell,b_cell = a_structure.get_cell(),b_structure.get_cell();
 
         strain = np.diag([1+ds,1+ds,1]);
         if strain_cell == "a":
@@ -88,22 +83,31 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max
 
         closest_cells = get_closest_cells( a_cell, b_cell, max_size=max_size);
         if closest_cells is None:
-            return None;
-        
-        sc_atoms, diff= closest_cells;
+            return None;        
+        ab_scells, diff= closest_cells;
         if diff <= min_diff and abs(ds)< abs(min_ds):
-            min_scatms, min_diff,min_ds = sc_atoms,diff,ds;
+             min_ab_scells,min_diff,min_ds = ab_scells,diff,ds;
 
-    a_cell , b_cell = min_scatms
-    return (cell.Cell(a_cell),cell.Cell(b_cell)), min_diff,min_ds
+    min_ab_scell = list(map(cell.Cell,min_ab_scells));
+    return min_ab_scell, min_diff,min_ds
 
 def match_cells(a_structure, b_structure):
     a_cell = a_structure.get_cell() ;
-    b_cell = a_structure.get_cell() ;
-    scal   = np.linalg.norm(a_cell, axis=0)/np.linalg.norm(b_cell, axis=0);
-    b_structure.set_cell(b_cell*scal);
-    return (a_structure, b_structure), scal;
+    b_cell = b_structure.get_cell() ;
 
+    norm   = np.linalg.norm;
+    invert = a_cell[2][2]< b_cell[2][2];
+    if invert:
+        transf = np.diag( norm(b_cell, axis=1)/norm(a_cell, axis=1) );
+        a_structure.set_cell(transf.dot(a_cell));
+    else:
+        transf = np.diag( norm(a_cell, axis=1)/norm(b_cell, axis=1) );
+        b_structure.set_cell(transf.dot(b_cell));
+
+    return (a_structure, b_structure), transf;
+
+def get_cell_transformation(ocell,fcell):
+    return ocell.scaled_positions(np.array(fcell))
 
 def get_atoms_in_cell(structure,cell,shift=[0,0,0]):
     icell    = structure.get_cell(); 
@@ -114,24 +118,27 @@ def get_atoms_in_cell(structure,cell,shift=[0,0,0]):
     allowed  =  np.all( (scal_pos < [1,1,1])*(scal_pos >= [0,0,0]),axis=1 );
     return list(scal_pos[allowed]), list(numbers[allowed]);
 
-def create_expand_supercell(structure, sc_cell ):
+def expand_supercell(structure, sc_cell, nmax=10 ):
     sc_spos,sc_anum = [], []
-    zero= np.array([0,0,0],dtype=int);  
-    xvec= np.copy(zero);
-    while( True ):
-        natoms= len(sc_spos);
-        yvec  = np.copy(zero);
-        while( True  ):
-            scell_pos,scell_num= get_atoms_in_cell(structure,sc_cell,shift= xvec + yvec);
-            if len(scell_pos)==0:
+    pns = np.arange(0 , nmax);
+    nns = np.arange(-nmax,0)[::-1];
+    for nxs,nys in ( (pns,pns),(pns,nns),(nns,pns),(nns,nns)):
+        for nx in nxs:
+            natoms= len(sc_spos);
+            for ny in nys:
+                shift  = [nx,ny,0];
+                scell_pos,scell_num= get_atoms_in_cell(structure,sc_cell,shift= shift);
+                if len(scell_pos)==0:
+                    break;
+                sc_spos.append(scell_pos);
+                sc_anum.append(scell_num);
+            if natoms == len(sc_spos):
                 break;
-            sc_spos.append(scell_pos);
-            sc_anum.append(scell_num);
-            yvec += [0,1,0];
-        if natoms == len(sc_spos):
-            break;
-        xvec += [1,0,0];
-
     sc_anum = [n for nums in sc_anum for n in nums];
     sc_spos = [p for spos in sc_spos for p in spos];
+    #sort by atomic number from high to low
+    indexes = np.argsort(sc_anum)[::-1];
+    sc_anum = np.array(sc_anum)[indexes];
+    sc_spos = np.array(sc_spos)[indexes];
+
     return Atoms( numbers=sc_anum, scaled_positions=sc_spos, cell=sc_cell, pbc=structure.pbc );
