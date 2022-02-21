@@ -1,14 +1,65 @@
 import numpy as np
 from ase.build.niggli import niggli_reduce_cell
-from ase import cell
+import ase 
 from ase import Atoms
 
 from fractions import Fraction
 
+
+def convert_to_cell(cell):
+    return ase.cell.Cell( cell );
+
+def transform_cell(T,cell ):
+    return ase.cell.Cell( np.dot(T,cell) );
+ 
+def niggli_cell_2D(cell, eps=1e-2, loop_max=100, transformation=False): #Acta Cryst. (1976). A32, 297 
+    icell = np.copy(cell)
+    def G_metrix(cell):
+        a,b,c= cell;
+        A = np.dot(a,a);
+        B = np.dot(b,b);
+        Y = 2*a.dot(b) ;
+        return A,B,Y;
+
+    itnum = 0;
+    nTrans= np.eye(3);
+    A,B,Y = G_metrix(cell);
+    is_reduced = (A<=B+eps and np.abs(Y) <= A +eps and np.abs(Y) <= B+eps  and Y<=0 );
+    while(not is_reduced):
+        A,B,Y = G_metrix(cell);
+        itnum+=1;
+        if A>B+eps:
+            M = [ [0,1,0],[1,0,0], [0,0,1] ];
+            cell  = np.dot(M,cell);
+            nTrans= np.dot(M,nTrans);
+        if Y>0:
+            M = [ [1,0,0],[0,-1,0], [0,0,1] ];
+            cell  = np.dot(M,cell);
+            nTrans= np.dot(M,nTrans);
+        if np.abs(Y) > (A + eps):   
+            M = [ [1,0,0],[-np.sign(Y),1,0], [0,0,1] ];
+            cell  = np.dot(M,cell);
+            nTrans= np.dot(M,nTrans);
+        if np.abs(Y) > (B + eps):   
+            M = [ [1,-np.sign(Y),0],[0,1,0], [0,0,1] ];
+            cell  = np.dot(M,cell);
+            nTrans= np.dot(M,nTrans);
+        is_reduced = (A<=B+eps and np.abs(Y) <= A +eps and np.abs(Y) <= B+eps  and Y<=0 );
+        if itnum > loop_max:
+            print("Cell not reduced, returning None");
+            return None
+
+    if transformation:
+        return cell, nTrans
+    return cell;
+    
+
+
+
 def get_cells_rational_ratio(a_cell,b_cell, max_size=10):
     #The algorithm assumes a large and a small celll
-    l_cell  = cell.Cell(a_cell);
-    s_cell  = cell.Cell(b_cell);
+    l_cell  = ase.cell.Cell(a_cell);
+    s_cell  = ase.cell.Cell(b_cell);
     inverted= False;
     #Check if the assignation is correc
     if l_cell.area(2)< s_cell.area(2):
@@ -48,28 +99,28 @@ def get_compatible_supercell_transformations(n):
     Us = [ [[k,j,0],[0,m,0],[0,0,1]] for m,k,js in zip(ms,ks,js_m) for j in js] 
     return np.array(Us, dtype=int);
 
-def get_closest_cells( a_cell, b_cell, max_size=10):
+def get_closest_cells( a_cell, b_cell, max_size=10, tol=1e-2):
+    a_cell,b_cell = niggli_cell_2D(a_cell),niggli_cell_2D(b_cell)
     (a_n,b_n) ,ratio,err =  get_cells_rational_ratio( a_cell,b_cell,max_size=max_size );
     if a_n == 0 or b_n ==0:
         return None;
 
-    def niggli_cell(cell):
-        #the [0] returns the cell and [1] returns the transformation, that we don't want
-        return niggli_reduce_cell(cell)[0];
-
-    #Compute the set of possible transformations, its correspinding cells, and their maximally reduce niggli form
+    #Compute the set of possible transformations, its correspinding cells
     a_trans,b_trans  = [ get_compatible_supercell_transformations(n) for n in (a_n,b_n) ]
-    a_scells,b_scells= [ trans.dot(cell) for trans,cell in zip( (a_trans,b_trans),(a_cell, b_cell))]
-    a_ncells,b_ncells= [ np.array(list(map(niggli_cell,scell))) for scell in (a_scells,b_scells)];
+    a_scells,b_scells= [ np.dot(trans,cell) for trans,cell in zip( (a_trans,b_trans),(a_cell, b_cell))]
+
+    #Compute the maximally reduced niggli cells, make it 2D and try to get the unique transformations
+    a_ncells,b_ncells= [ np.array(list(map(niggli_cell_2D,scell))) for scell in (a_scells,b_scells)];
+    a_ncells,b_ncells= [ np.unique( np.round(scell,3), axis=0)  for scell in (a_ncells,b_ncells) ]
 
     #Construct a difference matrix and get the minimum index
-    diff_matrix =  np.array([ [ np.linalg.norm(a_ncell - b_ncell) for b_ncell in b_ncells] for a_ncell in a_ncells])
+    diff_matrix =  np.array([ [ np.linalg.norm( (a_ncell - b_ncell)[:2,:2]) for b_ncell in b_ncells] for a_ncell in a_ncells])
     a_idx, b_idx= np.unravel_index(np.argmin(diff_matrix, axis=None), diff_matrix.shape)
 
     return (a_ncells[a_idx],b_ncells[b_idx]),diff_matrix[a_idx, b_idx];
     
 
-def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max_size=10 ):
+def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="a", max_size=10, max_area=100 ):
     #Brute force scanning of strain
     min_diff,min_ds,min_ab_scells = np.inf,np.inf,None;
     for ds in np.linspace(-max_strain,max_strain,100):
