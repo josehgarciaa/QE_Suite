@@ -131,7 +131,7 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="b", max
     def diff(x):
         ds= x[0]
         S = np.diag([1+ds,1+ds,1]);
-        closest_cells = vdw.get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
+        closest_cells = get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
         if closest_cells is None:
             return np.inf;
         ab_scells, diff= closest_cells
@@ -141,9 +141,9 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="b", max
     opt_strain = 1+res.x[0];
     S = np.diag([opt_strain,opt_strain,1]);
 
-    closest_cells = vdw.get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
+    closest_cells = get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
     opt_ab_scells, opt_diff= closest_cells
-    opt_a,opt_b = list(map(vdw.convert_to_cell,opt_ab_scells));
+    opt_a,opt_b = list(map(convert_to_cell,opt_ab_scells));
 
     if strain_cell == "a":
         #invert the resulting cell since the algorithm assumed strained b
