@@ -26,6 +26,8 @@ print(cells[0].area(2),cells[1].area(2))
 print(cells[0],cells[1])
 print("diff",min_diff)
 print("params",params)
+print("transformations", vdw.get_cell_transformation(icells[0],cells[0]))
+print("transformations", vdw.get_cell_transformation(icells[1],cells[1]))
 #sc_structures= [ vdw.expand_supercell(struct,sc) for struct,sc in zip(structures,min_scell) ];
 
 #Construct an stacked structure

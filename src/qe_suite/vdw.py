@@ -1,9 +1,32 @@
+
+from numpy.linalg import norm
 import numpy as np
 from ase.build.niggli import niggli_reduce_cell
 import ase 
 from ase import Atoms
 
 from fractions import Fraction
+import warnings
+warnings.simplefilter("error")
+
+def cell_param(cell, axis=None):
+    norms = np.linalg.norm(cell, axis=1 );
+    ucell = np.diag(1/norms).dot(cell);
+    inners= np.dot(ucell, ucell.T);
+    angles= np.arccos(inners[ np.mask_indices(3, np.triu, 1) ]) #Get only upper elements    
+    if axis is None:
+        return np.array( ( *norms, *angles ) );
+    else:
+        return np.array(( *norms[norms!= norms[axis]],angles[axis-2]));
+
+
+def cell_diff(cell_a, cell_b, axis=None):
+#    d1 = np.abs(1- cell_param(cell_a, axis=axis)/cell_param(cell_b, axis=axis) );
+#    d2 = np.abs(1- cell_param(cell_b, axis=axis)/cell_param(cell_a, axis=axis) );
+#    rel_diff = np.linalg.norm( (d1+d2) )
+    rel_diff =np.linalg.norm( cell_a - cell_b)
+    return rel_diff
+
 
 
 def convert_to_cell(cell):
@@ -108,11 +131,11 @@ def get_closest_cells( a_cell, b_cell, max_area=None, tol=1e-2):
     #Compute the maximally reduced niggli cells, make it 2D and try to get the unique transformations
     a_ncells,b_ncells= [ [ncell for ncell in map(niggli_cell_2D,scell) if ncell is not None ] for scell in (a_scells,b_scells)];
 
-
     a_ncells,b_ncells= [ np.unique( np.round(scell,3), axis=0)  for scell in (a_ncells,b_ncells) ]
 
     #Construct a difference matrix and get the minimum index
-    diff_matrix =  np.array([ [ np.linalg.norm( (a_ncell - b_ncell)[:2,:2]) for b_ncell in b_ncells] for a_ncell in a_ncells])
+#    diff_matrix =  np.array([ [ np.linalg.norm( (a_ncell-b_ncell)[:2,:2] ) for b_ncell in b_ncells] for a_ncell in a_ncells])
+    diff_matrix =  np.array([ [ cell_diff(a_ncell,b_ncell, axis=2) for b_ncell in b_ncells] for a_ncell in a_ncells])
     a_idx, b_idx= np.unravel_index(np.argmin(diff_matrix, axis=None), diff_matrix.shape)
 
     rel_diff = diff_matrix[a_idx, b_idx];
@@ -157,7 +180,7 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.01, strain_cell="b", ma
         if get_cells:
             return closest_cells;
         ab_scells, diff= closest_cells
-        return diff*( 1 + (area-min_area)/(max_area-min_area) )
+        return diff;
     bounds = [(-max_strain,max_strain), (min_area,max_area)];
     opt_params = differential_evolution(optimize_cell, bounds, init="sobol");
     (opt_a,opt_b),min_diff = optimize_cell(opt_params.x, get_cells=True);

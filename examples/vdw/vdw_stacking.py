@@ -21,38 +21,41 @@ for s in systs:
     structures.append(structure);
 
 icells = [s.get_cell() for s in structures];
-max_cell = np.diag((10,10,1));
+max_cell = np.diag((5,5,1));
 max_area = np.linalg.det( max_cell.dot(icells[0])[:2,:2]);
-cells,params,min_diff=  vdw.get_vdw_cell( *structures, max_strain=0.03, max_area=max_area ) ; 
+cells,params,min_diff=  vdw.get_vdw_cell( *structures, max_strain=0.1, max_area=max_area ) ; 
 print(cells[0].area(2),cells[1].area(2))
 print(cells[0],cells[1])
 print("diff",min_diff)
 print("params",params)
 
-
-
-#sc_structures= [ vdw.expand_supercell(struct,sc) for struct,sc in zip(structures,opt_scells) ];
-
-#Construct an stacked structure
-#vdw_cell =sc_structures[0].get_cell();
-#print("vdw_cell",vdw_cell)
-#vdw_structure = ase.build.stack(*sc_structures, axis=2, maxstrain=0.1, distance=2);
+transfs =[ vdw.get_cell_transformation(icells[0],cells[0]), np.round( vdw.get_cell_transformation(icells[1],cells[1]) ) ];
+sc_structures =[None,None];
+sc_structures[0]=ase.build.make_supercell(structures[0],transfs[0], wrap=True, tol=1e-05)
+sc_structures[1]=ase.build.make_supercell(structures[1],transfs[1], wrap=True, tol=1e-05)
+rcell = sc_structures[0].get_cell();
+scell = sc_structures[1].get_cell()
+strain= vdw.get_cell_transformation(scell,rcell)
+sc_structures[1].set_cell(rcell, scale_atoms=True)
+vdw_structure = ase.build.stack(*sc_structures, axis=2, maxstrain=1e-3, distance = 2.0);
 
 ##fix height
-#cell   = vdw_structure.get_cell();
-#cell[2]= vdw_cell[2]; 
-#vdw_structure.set_cell(cell);
+cell   = vdw_structure.get_cell();
+cell[2]= icells[0][2]; 
+vdw_structure.set_cell(cell);
+
 
 #get xyz info
-#positions= vdw_structure.get_positions();
-#symbols  = vdw_structure.get_chemical_symbols();
-#xyz = [ (x,list(p)) for x,p in zip(symbols,positions)];
+positions= vdw_structure.get_positions();
+symbols  = vdw_structure.get_chemical_symbols();
+xyz = [ (x,list(p)) for x,p in zip(symbols,positions)];
 
-#qeio.write_xyz(xyz,"vdw.xyz")
-#qes_handler = generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True) 
-#qes_handler.set_calculation("scf");
-#qes_handler.use_SSSP(functional="PBEsol", target="precision", path="../SSSP");
-#qes_handler.write_input_file("QEsuite.scf");
+qeio.write_xyz(xyz,"vdw.xyz")
+qes_handler = generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True) 
+#qes_handler.use_symmetries();
+qes_handler.set_calculation("scf");
+qes_handler.use_SSSP(functional="PBEsol", target="precision", path="../SSSP");
+qes_handler.write_input_file("QEsuite.scf");
 
 
 
