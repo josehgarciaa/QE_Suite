@@ -19,13 +19,9 @@ for s in systs:
     structures.append(structure);
 
 icells = [s.get_cell() for s in structures];
-
-
 max_cell = np.diag((10,10,1));
 max_area = np.linalg.det( max_cell.dot(icells[0])[:2,:2]);
-
 cells,params,min_diff=  vdw.get_vdw_cell( *structures, max_strain=0.03, max_area=max_area ) ; 
-
 print(cells[0].area(2),cells[1].area(2))
 print(cells[0],cells[1])
 print("diff",min_diff)

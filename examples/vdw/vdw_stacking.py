@@ -20,37 +20,39 @@ for s in systs:
     structure=  Atoms( positions=(positions), symbols=symbols, cell=cell);
     structures.append(structure);
 
-#Find the most similar supercell structures within a strain tolerance
-opt_scells, opt_diff,opt_strain = vdw.get_vdw_cell( *structures, max_strain=0.3, max_size=30 );
+icells = [s.get_cell() for s in structures];
+max_cell = np.diag((10,10,1));
+max_area = np.linalg.det( max_cell.dot(icells[0])[:2,:2]);
+cells,params,min_diff=  vdw.get_vdw_cell( *structures, max_strain=0.03, max_area=max_area ) ; 
+print(cells[0].area(2),cells[1].area(2))
+print(cells[0],cells[1])
+print("diff",min_diff)
+print("params",params)
 
-if( opt_diff>1e-1):
-    print("The resulting cell is not optimal")
-else:
-    print(opt_scells, opt_diff,opt_strain)
 
 
-sc_structures= [ vdw.expand_supercell(struct,sc) for struct,sc in zip(structures,opt_scells) ];
+#sc_structures= [ vdw.expand_supercell(struct,sc) for struct,sc in zip(structures,opt_scells) ];
 
 #Construct an stacked structure
-vdw_cell =sc_structures[0].get_cell();
-print("vdw_cell",vdw_cell)
-vdw_structure = ase.build.stack(*sc_structures, axis=2, maxstrain=0.1, distance=2);
+#vdw_cell =sc_structures[0].get_cell();
+#print("vdw_cell",vdw_cell)
+#vdw_structure = ase.build.stack(*sc_structures, axis=2, maxstrain=0.1, distance=2);
 
-#fix height
-cell   = vdw_structure.get_cell();
-cell[2]= vdw_cell[2]; 
-vdw_structure.set_cell(cell);
+##fix height
+#cell   = vdw_structure.get_cell();
+#cell[2]= vdw_cell[2]; 
+#vdw_structure.set_cell(cell);
 
 #get xyz info
-positions= vdw_structure.get_positions();
-symbols  = vdw_structure.get_chemical_symbols();
-xyz = [ (x,list(p)) for x,p in zip(symbols,positions)];
+#positions= vdw_structure.get_positions();
+#symbols  = vdw_structure.get_chemical_symbols();
+#xyz = [ (x,list(p)) for x,p in zip(symbols,positions)];
 
-qeio.write_xyz(xyz,"vdw.xyz")
-qes_handler = generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True) 
-qes_handler.set_calculation("scf");
-qes_handler.use_SSSP(functional="PBEsol", target="precision", path="../SSSP");
-qes_handler.write_input_file("QEsuite.scf");
+#qeio.write_xyz(xyz,"vdw.xyz")
+#qes_handler = generate_from_xyz(xyz=xyz, cell=cell, two_dimensional=True) 
+#qes_handler.set_calculation("scf");
+#qes_handler.use_SSSP(functional="PBEsol", target="precision", path="../SSSP");
+#qes_handler.write_input_file("QEsuite.scf");
 
 
 

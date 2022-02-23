@@ -140,7 +140,7 @@ def get_compatible_supercell_transformations_old(n):
     
 
 def get_vdw_cell( a_structure, b_structure, max_strain=0.01, strain_cell="b", max_area=None ):
-
+#    options = (popsize=100, mutation=(0.7, 1), recombination=0.5,workers=-1);
     if strain_cell=="a":
         #invert since the algorithm will always strain b
         a_structure, b_structure= b_structure, a_structure
@@ -159,7 +159,7 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.01, strain_cell="b", ma
         ab_scells, diff= closest_cells
         return diff*( 1 + (area-min_area)/(max_area-min_area) )
     bounds = [(-max_strain,max_strain), (min_area,max_area)];
-    opt_params = differential_evolution(optimize_cell, bounds, init="sobol",popsize=100, mutation=(0.7, 1), recombination=0.5);
+    opt_params = differential_evolution(optimize_cell, bounds, init="sobol");
     (opt_a,opt_b),min_diff = optimize_cell(opt_params.x, get_cells=True);
 
     if strain_cell == "a":
