@@ -12,7 +12,7 @@ def convert_to_cell(cell):
 def transform_cell(T,cell ):
     return ase.cell.Cell( np.dot(T,cell) );
  
-def niggli_cell_2D(cell, eps=1e-2, loop_max=100, transformation=False): #Acta Cryst. (1976). A32, 297 
+def niggli_cell_2D(cell, eps=1e-1, loop_max=100, transformation=False): #Acta Cryst. (1976). A32, 297 
     icell = np.copy(cell)
     def G_metrix(cell):
         a,b,c= cell;
@@ -36,11 +36,11 @@ def niggli_cell_2D(cell, eps=1e-2, loop_max=100, transformation=False): #Acta Cr
             M = [ [1,0,0],[0,-1,0], [0,0,1] ];
             cell  = np.dot(M,cell);
             nTrans= np.dot(M,nTrans);
-        if np.abs(Y) > (A + eps):   
+        if np.abs(Y) > A + eps:   
             M = [ [1,0,0],[-np.sign(Y),1,0], [0,0,1] ];
             cell  = np.dot(M,cell);
             nTrans= np.dot(M,nTrans);
-        if np.abs(Y) > (B + eps):   
+        if np.abs(Y) > B + eps:   
             M = [ [1,-np.sign(Y),0],[0,1,0], [0,0,1] ];
             cell  = np.dot(M,cell);
             nTrans= np.dot(M,nTrans);
@@ -50,39 +50,28 @@ def niggli_cell_2D(cell, eps=1e-2, loop_max=100, transformation=False): #Acta Cr
             return None
 
     if transformation:
-        return cell, nTrans
-    return cell;
+        return ase.cell.Cell(cell), nTrans
+    return ase.cell.Cell(cell);
     
 
+def best_unit_fraction_approximation( ratio):
+    max_n= int( np.ceil(1/ratio) ); tol_n= 2;
+    min_n = 1 if max_n-tol_n<1 else max_n-tol_n;
+    max_n = max_n+tol_n;
+    ns   = np.arange( min_n ,max_n + 1);
+    n    = ns[ np.argmin( np.abs(ratio -1/ns)) ];
+    return n;
 
 
-def get_cells_rational_ratio(a_cell,b_cell, max_size=10):
-    #The algorithm assumes a large and a small celll
-    l_cell  = ase.cell.Cell(a_cell);
-    s_cell  = ase.cell.Cell(b_cell);
-    inverted= False;
-    #Check if the assignation is correc
-    if l_cell.area(2)< s_cell.area(2):
-        l_cell,s_cell = s_cell,l_cell;
-        inverted =True;
-    #Compute the raatio of the areas and its approximation
-    r_ratio  = s_cell.area(2)/l_cell.area(2);
-    a_ratio  = Fraction(r_ratio).limit_denominator(max_size);
-    if a_ratio.denominator ==0 or a_ratio.numerator ==0:
-        return (0,0),r_ratio,np.inf;
- 
-    if inverted:
-        diff = 1.0 - r_ratio/a_ratio;
-        ratio= 1/r_ratio
-        return (a_ratio.denominator,a_ratio.numerator), ratio,diff;
-
-    diff = 1 - a_ratio/r_ratio;
-    return (a_ratio.numerator,a_ratio.denominator),r_ratio,diff;
 
 def divisors(n):
     return [ i for i in range(1,n+1) if n%i==0 ];
 
-def get_compatible_supercell_transformations(n):
+def get_compatible_supercell_transformations( initial_area, target_area ):
+    assert initial_area<= target_area, "Initial area should be smaller tan target area"
+    r_ratio  = initial_area/target_area;
+    n = best_unit_fraction_approximation( r_ratio)
+
     #Citation: Journal of Applied Physics 55, 378 (1984); doi: 10.1063/1.333084
     #We are building a matrix that construct a super cell with area equal to n times
     #he unit cell
@@ -99,28 +88,58 @@ def get_compatible_supercell_transformations(n):
     Us = [ [[k,j,0],[0,m,0],[0,0,1]] for m,k,js in zip(ms,ks,js_m) for j in js] 
     return np.array(Us, dtype=int);
 
-def get_closest_cells( a_cell, b_cell, max_size=10, tol=1e-2):
+def get_closest_cells( a_cell, b_cell, max_area=None, tol=1e-2):
     a_cell,b_cell = niggli_cell_2D(a_cell),niggli_cell_2D(b_cell)
-    (a_n,b_n) ,ratio,err =  get_cells_rational_ratio( a_cell,b_cell,max_size=max_size );
-    if a_n == 0 or b_n ==0:
+    a_area,b_area = [a.area(2) for a in (a_cell,b_cell) ];
+    if max_area is None:
+        max_area = a_area; 
+
+    #Compute the set of possible transformations and return None if any of the cells does not have
+    #a transformation
+    a_trans,b_trans  = [ get_compatible_supercell_transformations(  initial_area=area, 
+                                                                    target_area=max_area)   
+                                                                    for area in (a_area,b_area)]
+    if a_trans is None or b_trans is None:
         return None;
 
-    #Compute the set of possible transformations, its correspinding cells
-    a_trans,b_trans  = [ get_compatible_supercell_transformations(n) for n in (a_n,b_n) ]
-    a_scells,b_scells= [ np.dot(trans,cell) for trans,cell in zip( (a_trans,b_trans),(a_cell, b_cell))]
+    #Compute the supercell cells and  reduce them to niggli form
+    a_scells,b_scells= [ np.dot(trans,cell) for trans,cell in zip( (a_trans,b_trans),(a_cell, b_cell)) ]
 
     #Compute the maximally reduced niggli cells, make it 2D and try to get the unique transformations
-    a_ncells,b_ncells= [ np.array(list(map(niggli_cell_2D,scell))) for scell in (a_scells,b_scells)];
+    a_ncells,b_ncells= [ [ncell for ncell in map(niggli_cell_2D,scell) if ncell is not None ] for scell in (a_scells,b_scells)];
+
+
     a_ncells,b_ncells= [ np.unique( np.round(scell,3), axis=0)  for scell in (a_ncells,b_ncells) ]
 
     #Construct a difference matrix and get the minimum index
     diff_matrix =  np.array([ [ np.linalg.norm( (a_ncell - b_ncell)[:2,:2]) for b_ncell in b_ncells] for a_ncell in a_ncells])
     a_idx, b_idx= np.unravel_index(np.argmin(diff_matrix, axis=None), diff_matrix.shape)
 
-    return (a_ncells[a_idx],b_ncells[b_idx]),diff_matrix[a_idx, b_idx];
+    rel_diff = diff_matrix[a_idx, b_idx];
+    return (a_ncells[a_idx],b_ncells[b_idx]),rel_diff;
+
+
+
+def get_compatible_supercell_transformations_old(n):
+    #Citation: Journal of Applied Physics 55, 378 (1984); doi: 10.1063/1.333084
+    #We are building a matrix that construct a super cell with area equal to n times
+    #he unit cell
+    #    | k  j 0|
+    # A =| 0  m 0|
+    #    | 0  0 1|
+    # that satisfy the constrains
+    # k*m = n. Since we want n/m to be an integer, the ms are the divisors of n.
+    # k,m > 0
+    # 0<= j <= m-1 
+    ms = divisors(n);
+    ks = [n//m for m in ms];
+    js_m= [[j for j in range(m)] for m in ms ];
+    Us = [ [[k,j,0],[0,m,0],[0,0,1]] for m,k,js in zip(ms,ks,js_m) for j in js] 
+    return np.array(Us, dtype=int);
+
     
 
-def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="b", max_size=10, max_area=100 ):
+def get_vdw_cell( a_structure, b_structure, max_strain=0.01, strain_cell="b", max_area=None ):
 
     if strain_cell=="a":
         #invert since the algorithm will always strain b
@@ -128,28 +147,26 @@ def get_vdw_cell( a_structure, b_structure, max_strain=0.2, strain_cell="b", max
 
     from scipy.optimize import differential_evolution
     a_cell,b_cell = a_structure.get_cell(),b_structure.get_cell();
-    def diff(x):
-        ds= x[0]
-        S = np.diag([1+ds,1+ds,1]);
-        closest_cells = get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
+    min_area = (1+max_strain)**2*np.max( [a_cell.area(2),b_cell.area(2)]);
+    def optimize_cell(params, get_cells=False):
+        rel_strain,area = params;
+        strain  = np.diag([1+rel_strain,1+rel_strain,1]);
+        closest_cells = get_closest_cells( a_cell, strain.dot(b_cell), area);
         if closest_cells is None:
-            return np.inf;
+            return np.inf;        
+        if get_cells:
+            return closest_cells;
         ab_scells, diff= closest_cells
-        return diff
-    bounds = [(-max_strain,max_strain)]
-    res = differential_evolution(diff, bounds,  polish=True );
-    opt_strain = 1+res.x[0];
-    S = np.diag([opt_strain,opt_strain,1]);
-
-    closest_cells = get_closest_cells( a_cell, S.dot(b_cell), max_size=max_size);
-    opt_ab_scells, opt_diff= closest_cells
-    opt_a,opt_b = list(map(convert_to_cell,opt_ab_scells));
+        return diff*( 1 + (area-min_area)/(max_area-min_area) )
+    bounds = [(-max_strain,max_strain), (min_area,max_area)];
+    opt_params = differential_evolution(optimize_cell, bounds, init="sobol",popsize=100, mutation=(0.7, 1), recombination=0.5);
+    (opt_a,opt_b),min_diff = optimize_cell(opt_params.x, get_cells=True);
 
     if strain_cell == "a":
         #invert the resulting cell since the algorithm assumed strained b
         opt_a,opt_b = opt_b,opt_a;
 
-    return opt_ab_scells, opt_diff,opt_strain
+    return (convert_to_cell(opt_a),convert_to_cell(opt_b)), opt_params.x,min_diff
 
 def match_cells(a_structure, b_structure):
     a_cell = a_structure.get_cell() ;
