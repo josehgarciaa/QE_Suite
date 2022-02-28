@@ -1,0 +1,3 @@
+changed the name qe_suite.qe_suite to qe_suite.builder
+and qe_suite.qe_suite.handler to qe_suite.builder.input
+The examples should update accordingly
