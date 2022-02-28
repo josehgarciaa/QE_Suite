@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Quatum Espresso &#8212; QESuite alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Contents" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="quatum-espresso">
+<h1>Quatum Espresso<a class="headerlink" href="#quatum-espresso" title="Permalink to this headline">¶</a></h1>
+<p>To retrieve a list of random ingredients,
+you can use the <code class="docutils literal notranslate"><span class="pre">qe_suite.handler.get_random_ingredients()</span></code> function:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="qe_suite.builder.input">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">input</span></span><a class="headerlink" href="#qe_suite.builder.input" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.input.set_calculation">
+<span class="sig-name descname"><span class="pre">set_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.input.set_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the calculation to be performed. This flag will initialize different options required for the calculation
+using the default values</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>calc ( string) :</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.input.set_structure">
+<span class="sig-name descname"><span class="pre">set_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_dimensional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.input.set_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the atomic position and lattice vectors</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>structure ( Atoms) : A tuple containing (cell, positions, numbers)n array containing the lattice vectors in arbitrary units, where cell[0] the first vector.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.input.use_SSSP">
+<span class="sig-name descname"><span class="pre">use_SSSP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">functional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'PBEsol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'precision'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./SSSP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cutoff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.input.use_SSSP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the standard Solid State Pseudo Potential (SSSP). The type define whereas you want to use efficiency or efficiency 
+or precision. 
+If you use this option please read the acknowledgment instrunctions in :
+<a class="reference external" href="https://www.materialscloud.org/discover/sssp/table/efficiency">https://www.materialscloud.org/discover/sssp/table/efficiency</a></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>type ( string) : 
+path ( string) :</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.input.write_input_file">
+<span class="sig-name descname"><span class="pre">write_input_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ofname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'out'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.input.write_input_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the input file for QESpresso</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-qe_suite.builder"></span><dl class="py function">
+<dt class="sig sig-object py" id="qe_suite.builder.generate_from_xyz">
+<span class="sig-name descname"><span class="pre">generate_from_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_dimensional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnetic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.generate_from_xyz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a QESuite handler using the structural informaiton
+in the form of a xyz and cell file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cell (string): An array containing the lattice vectors in arbitrary units, where cell[0] the first vector.
+xyz (string): A list of tuples (s,x,y,z), whe s detones atomic specie located at the (x,y,z) position in the same units as cell.
+magnetic (bool): A label to indicates if the system is magnetic. Default False.
+preiodic (bool): A tuple that indicates the periodicity directions. Default (True, True, True ).</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QESuite</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quatum Espresso</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Contents</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, Jose H. Garcia.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/usage.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

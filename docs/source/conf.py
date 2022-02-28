@@ -10,11 +10,15 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
-
+import os
+import sys
+#Package directory
+sys.path.insert(0, os.path.abspath('../../src/'))
+sys.path.insert(0, os.path.abspath('.'))
+print(sys.path)
+# If true, the current module name will be prepended to all description
+# unit titles (such as .. function::).
+add_module_names = False
 # -- Project information -----------------------------------------------------
 
 project = 'QESuite'
@@ -31,6 +35,10 @@ release = 'alpha'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.duration',
+    'sphinx.ext.doctest',
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary'
 ]
 
 # Add any paths that contain templates here, relative to this directory.

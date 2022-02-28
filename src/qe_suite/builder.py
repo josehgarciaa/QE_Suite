@@ -7,7 +7,8 @@ from ase import Atom, Atoms
 from qe_suite.namelists import control, system, electrons, ions, cell, fcp
 from qe_suite.cards import atomic_positions, atomic_species, kpoints, cell_params, constraints 
 
-class handler():
+
+class QEInput():
     def __init__(self):
         #Default initialization of namelists
         self.c   = control.handler();
