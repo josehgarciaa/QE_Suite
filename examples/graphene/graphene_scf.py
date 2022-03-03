@@ -21,7 +21,13 @@ structure = builder.Structure(cell, fractional_positions, atomic_symbols);
 print("The space group is: ", structure.hm_symbol() )
 
 #Create a configuration file based on graphene's structure
-qe_input = builder.QEInput(structure= structure);
+qe_input = builder.QEInput(name=system, structure= structure);
+
+
+
+
+
+
 
 #xyz  = qe_io.load_xyz(syst+".xyz");
 #cell = qe_io.load_cell(syst+".uc");
