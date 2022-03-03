@@ -1,12 +1,17 @@
 Quatum Espresso
 ----------------
 
-To retrieve a list of random ingredients,
-you can use the ``qe_suite.handler.get_random_ingredients()`` function:
+The build module contains classes to build physical and simulation objects
 
+.. autoclass:: qe_suite.builder.Structure
+  :members:
+
+
+.. autoclass:: qe_suite.builder.Calculation
+  :members:
 
 .. autoclass:: qe_suite.builder.QEInput
-   :members:
+  :members:
 
-.. automodule:: qe_suite.builder
-   :members:
+
+
