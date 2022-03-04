@@ -1,14 +1,25 @@
 from .control import Control
-#, system, electrons, ions, cell, fcp
-
-
+from .system  import System
+from .electrons import Electrons
+from .ions import Ions
+from .cell import Cell
+from .fcp import FCP
 class Handler:
 
     def __init__(self, calculation, structure, electronic_state):
-        self.c   = Control(calculation="scf");
-#        self.s   = system.handler();
-#        self.e   = electrons.handler();
-#        self.ions= ions.handler();
-#        self.cell= cell.handler();
-#        self.fcp = fcp.handler();
+        self.__dict__.update(
+            {"control": Control(calculation="scf") , 
+             "system": System(), 
+             "electrons": Electrons(), 
+             "ions": Ions(), 
+             "cell": Cell(), 
+             "fpc": FCP(), 
+             })
+
+    def __str__(self):
+        out = "";
+        for key, namelist in self.__dict__.items():
+            out += str(namelist);
+        return out
+
 

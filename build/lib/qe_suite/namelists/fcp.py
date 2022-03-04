@@ -1,18 +1,13 @@
-import qe_suite.io as qe_io 
+from .namelist import Namelist
 
-class handler:
-    
-    options = dict();
-    
+
+class FCP(Namelist):
+
     def __init__(self):
-        self.options["fcp_mu"] = 0;
-
-    def text(self):
-        out = "&FCP\n";
-        for k,v in self.options.items(): 
-            out+= k+"="+qe_io.format(v)+"\n";
-        out += "/\n";
-        return out;
-
-    def print(self):
-        print(self.text());
+        self.__dict__.update(
+            {"fcp_mu": None, "fcp_dynamics": None, "fcp_conv_thr": None,
+             "fcp_ndiis": None, "fcp_mass": None, "fcp_velocity": None,
+             "fcp_temperature": None, "fcp_tempw": None, "fcp_tolp": None,
+             "fcp_delta_t": None, "fcp_nraise": None, "freeze_all_atoms": None}
+        )
+        self.set_namelist_name("&FCP");

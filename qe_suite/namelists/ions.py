@@ -1,20 +1,8 @@
-import qe_suite.io as qe_io 
+from .namelist import Namelist
 
-class Ions:
 
-    ion_positions = None; ion_velocities= None; ion_dynamics = None;
-    pot_extrapolation= None; wfc_extrapolation= None; remove_rigid_rot= None;
-    
-    #variables used for molecular dynamics
-    ion_temperature	=None; tempw= None;
-    tolp= None; delta_t= None; nraise= None;
-    refold_pos= None; upscale= None; bfgs_ndim= None;
-    trust_radius_max= None; trust_radius_min= None;
-    trust_radius_ini= None; w_1= None; w_2= None;
-    fire_alpha_init= None; fire_falpha= None;
-    fire_nmin= None; fire_f_inc= None; fire_f_dec= None;	
-    fire_dtmax= None; dtmax = None;
-            
+class Ions(Namelist):
+
     """The ions parameters used in the simulation. 
 
         Attributes:
@@ -41,19 +29,18 @@ class Ions:
         Example
         ------------
         >>> # qe_input.control.etot_conv_thr	= 1e04;
-    """    
-    
-    options = dict();
-    
+    """
+
+    options = dict()
+
     def __init__(self):
-        self.options["ion_positions"] = 'default';
-
-    def text(self):
-        out = "&IONS\n";
-        for k,v in self.options.items(): 
-            out+= k+"="+qe_io.format(v)+"\n";
-        out += "/";
-        return out;
-
-    def print(self):
-        print(self.text());
+        self.__dict__.update(
+            {"ion_positions": None, "ion_velocities": None, "ion_dynamics": None,
+                "pot_extrapolation": None, "wfc_extrapolation": None, "remove_rigid_rot": None,
+                "ion_temperature": None, "tempw": None, "tolp": None, "delta_t": None,
+                "nraise": None, "refold_pos": None, "upscale": None, "bfgs_ndim": None,
+                "trust_radius_max": None, "trust_radius_min": None, "trust_radius_ini": None,
+                "w_1": None, "w_2": None, "fire_alpha_init": None, "fire_falpha": None,
+                "fire_nmin": None, "fire_f_inc": None, "fire_f_dec": None, "fire_dtmax": None, "dtmax": None}
+        )
+        self.set_namelist_name("&IONS");

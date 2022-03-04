@@ -1,90 +1,7 @@
-import qe_suite.io as qe_io 
-class System:
+from .namelist import Namelist
 
-    #Typical  required structural parameters
-    ibrav= None; celldm= None;
-    A, B, C, cosAB, cosAC, cosBC = [None]*6;
-    nat= None; ntyp=None; nbnd=None;
 
-    #Typical  required simulation parameters parameters
-    ecutwfc=None; ecutrho= None; 
-    ecutfock = None;	
-
-    #Initial electronic and magnetic configuration
-    tot_charge= None; starting_charge= None;
-    tot_magnetization= None; starting_magnetization= None;
-    
-    # Symmetries and FFT  
-    nr1, nr2, nr3 = [None]*3;
-    nr1s, nr2s, nr3s = [None]*3;
-    nosym =None; nosym_evc = None;
-    noinv =None; no_t_rev =None;
-    force_symmorphic = None; use_all_frac = None;
-
-    #Occupation parameters
-    occupations =None; one_atom_occupations = None;
-    starting_spin_angle = None;	
-    degauss = None; smearing = None;
-    nspins = None; noncolin=None;
-    
-    #hybrid functional definitions
-    ecfixed = None; qcutz= None; q2sigma=None;
-    input_dft = None; ace = None; exx_fraction =None;
-    screening_parameter = None; exxdiv_treatment =None
-    x_gamma_extrapolation = None; ecutvcut =None;
-    nqx1, nqx2, nqx3 = [None]*3;
-    localization_thr = None;
-
-    #DFT+U parameters
-    lda_plus_u = None; lda_plus_u_kind = None;
-    Hubbard_U = [None,]; Hubbard_J0= [None,]; Hubbard_V = [ [None,],];
-    Hubbard_alpha = [None,]; Hubbard_beta= [None,]; Hubbard_J = [ [None,],];
-    starting_ns_eigenvalue = [None,]; U_projection_type = None;
-    Hubbard_parameters = None; 
-
-    #DMFT parameters
-    dmft = None; dmft_prefix= None;
-    ensemble_energies = None; 
-    
-    #Electric field parameter
-    edir =None;
-    emaxpos = None; eopreg=None; eamp = None;
-    zgate = None; relaxz = None; block=None;
-    block_1=None; block_2 = None; block_height=None;
-
-    #Non-collinear calculation parameters
-    angle1= None; angle2 = None; lforcet = None;
-    constrained_magnetization = None;
-    fixed_magnetization = None;
-    report = None;
-
-    #Spin-orbit coupling parameters
-    Lambda = None;
-    lspinorb = None;	
-
-    # Isolated calculation parameters
-    assume_isolated = None; esm_bc = None;	
-    esm_w = None; esm_efield=None;
-    esm_nfit = None;
-    
-    # Grand Canonical Self consistent calculations parameters
-    lgcscf	= None;
-    gcscf_mu = None; gcscf_conv_thr = None; gcscf_beta = None;	
-    
-    # Van der Waal parameters
-    vdw_corr = None;
-    london_s6= None; london_c6 = None; london_rvdw = None;
-    london_rcut = None;
-    dftd3_version = None; dftd3_threebody = None; ts_vdw_econv_thr = None;
-    ts_vdw_isolated = None;
-    xdm_a1 = None; xdm_a2 = None;
-    
-    # Symmetry considetation parameters
-    space_group = None;
-    uniqueb = None;         
-    origin_choice = None;     
-    rhombohedral = None;
-    
+class System(Namelist):
     """The system parameters used in the simulation. 
 
         Attributes:
@@ -109,44 +26,42 @@ class System:
         Example
         ------------
         >>> # qe_input.control.etot_conv_thr	= 1e04;
-    """    
+    """
+
     def __init__(self):
-        self.options["ibrav"] = 0;
-        self.options["ntyp"] = 0;
-        self.options["nat"] = 0;
-        self.options["occupations"] = 'smearing'
-        self.options["smearing"] = 'cold'
-        self.options["degauss"] = 1.46997236e-02
-        self.celldm = None;
+        self.__dict__.update({"ibrav": None, "celldm": None,
+                              "A": None, "B": None, "C": None, "cosAB": None, "cosAC": None, "cosBC": None,
+                              "nat": None, "ntyp": None, "nbnd": None, "ecutwfc": None, "ecutrho": None, "ecutfock": None,
+                              "tot_charge": None, "starting_charge": None, "tot_magnetization": None, "starting_magnetization": None,
+                              "nr1": None, "nr2": None, "nr3": None, "nr1s": None, "nr2s": None, "nr3s": None,
+                              "nosym": None, "nosym_evc": None, "noinv": None, "no_t_rev": None, "force_symmorphic": None, "use_all_frac": None,
+                              "occupations": None, "one_atom_occupations": None, "starting_spin_angle": None, "degauss": None, "smearing": None,
+                              "nspins": None, "noncolin": None, "ecfixed": None, "qcutz": None, "q2sigma": None,
+                              "input_dft": None, "ace": None, "exx_fraction": None, "screening_parameter": None, "exxdiv_treatment": None,
+                              "x_gamma_extrapolation": None, "ecutvcut": None, "nqx1": None, "nqx2": None, "nqx3": None, "localization_thr": None,
+                              "lda_plus_u": None, "lda_plus_u_kind": None, "Hubbard_U": None, "Hubbard_J0": None, "Hubbard_V": None,
+                              "Hubbard_alpha": None, "Hubbard_beta": None, "Hubbard_J": None, "starting_ns_eigenvalue": None,
+                              "U_projection_type": None, "Hubbard_parameters": None,
+                              "dmft": None, "dmft_prefix": None, "ensemble_energies": None,
+                              "edir": None, "emaxpos": None, "eopreg": None, "eamp": None, "zgate": None,
+                              "relaxz": None, "block": None, "block_1": None, "block_2": None, "block_height": None,
+                              "angle1": None, "angle2": None, "lforcet": None, "constrained_magnetization": None,
+                              "fixed_magnetization": None, "report": None, "Lambda": None, "lspinorb": None,
+                              "assume_isolated": None, "esm_bc": None, "esm_w": None, "esm_efield": None, "esm_nfit": None,
+                              "lgcscf": None, "gcscf_mu": None, "gcscf_conv_thr": None, "gcscf_beta": None, "vdw_corr": None,
+                              "london_s6": None, "london_c6": None, "london_rvdw": None, "london_rcut": None, "dftd3_version": None,
+                              "dftd3_threebody": None, "ts_vdw_econv_thr": None, "ts_vdw_isolated": None, "xdm_a1": None, "xdm_a2": None,
+                              "space_group": None, "uniqueb": None, "origin_choice": None, "rhombohedral": None})
+        self.set_namelist_name("&SYSTEM");
+        
 
     def set_bravais_lattice(self, ibrav, celldm):
-        self.options["ibrav"] = ibrav;
-        self.celldm = celldm;
+        self.options["ibrav"] = ibrav
+        self.celldm = celldm
 
     def set_cutoff(self, ecutwfc, ecutrho=None):
         if ecutrho is None:
-            ecutrho= 4*ecutwfc;
-        self.options["ecutwfc"] = ecutwfc;
-        self.options["ecutrho"] = ecutrho;
+            ecutrho = 4*ecutwfc
+        self.options["ecutwfc"] = ecutwfc
+        self.options["ecutrho"] = ecutrho
 
-    def text(self):
-        opt = self.options;
-        out = "&SYSTEM\n";
-        for k,v in opt.items():
-            if( k !="ibrav" ): 
-                out+= k+"="+qe_io.format(v)+"\n";
-
-        k ="ibrav";
-        if( opt[k] ==0 ):
-            out+= k+"="+qe_io.format(opt[k])+"\n";
-        else:
-            out+= k+"="+qe_io.format(opt[k])+"\n";
-            for i,c in enumerate(self.celldm):
-                if c is not None:
-                    out+= "celldm("+qe_io.format(1+i)+")="+qe_io.format(c)+"\n";
-
-        out += "/";
-        return out;
-
-    def print(self):
-        print(self.text());

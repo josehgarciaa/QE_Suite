@@ -1,18 +1,13 @@
-import qe_suite.io as qe_io 
+from .namelist import Namelist
 
-class handler:
-    
-    options = dict();
-    
+
+class Cell(Namelist):
+
+    options = dict
+
     def __init__(self):
-        self.options["CASE"] = 'none';
-
-    def text(self):
-        out = "&CELL\n";
-        for k,v in self.options.items(): 
-            out+= k+"="+qe_io.format(v)+"\n";
-        out += "/";
-        return out;
-
-    def print(self):
-        print(self.text());
+        self.__dict__.update(
+            {"cell_dynamics": None, "press": None, "wmass": None,
+             "cell_factor": None, "press_conv_thr": None, "cell_dofree": None}
+        )
+        self.set_namelist_name("&CELL");

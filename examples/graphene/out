@@ -1,0 +1,17 @@
+&CONTROL
+calculation='SCF'
+/
+&SYSTEM
+/
+&ELECTRONS
+electron_maxstep=200
+conv_thr=4e-10
+mixing_beta=0.4
+diagonalization='david'
+/
+&IONS
+/
+&CELL
+/
+&FCP
+/

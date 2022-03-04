@@ -1,19 +1,8 @@
-import qe_suite.io as qe_io 
+from .namelist import Namelist
 
-class Electrons:
 
-    electron_maxstep= None; scf_must_converge= None;
-    conv_thr= None; adaptive_thr=None; conv_thr_init=None;
-    conv_thr_multi= None; mixing_mode=None;
-    mixing_beta= None; mixing_ndim= None;
-    mixing_fixed_ns= None; diagonalization= None;
-    diago_thr_init= None; diago_cg_maxiter= None;
-    diago_david_ndim= None; diago_full_acc= None;
-    diago_rmm_ndim= None; diago_rmm_conv= None;
-    efield= None; efield_cart= None; efield_phase= None;
-    startingpot= None; startingwfc= None; tqr= None;
-    real_space= None;
-    
+class Electrons(Namelist):
+
     """The electronic parameters used in the simulation. 
 
         Attributes:
@@ -32,27 +21,26 @@ class Electrons:
         Parameters:
         ------------
         None:
-            
+
 
         Example
         ------------
         >>> # qe_input.control.etot_conv_thr	= 1e04;
-    """    
+    """
 
-    options = dict();
-    
     def __init__(self):
-        self.options["diagonalization"] = 'david';
-        self.options["conv_thr"] =   4e-10;
-        self.options["electron_maxstep"] = 200;
-        self.options["mixing_beta"] = 4e-1;
+        self.__dict__.update(
+            {"electron_maxstep": None, "scf_must_converge": None,
+             "conv_thr": None, "adaptive_thr": None, "conv_thr_init": None,
+             "conv_thr_multi": None, "mixing_mode": None, "mixing_beta": None,
+             "mixing_ndim": None, "mixing_fixed_ns": None, "diagonalization": None,
+             "diago_thr_init": None, "diago_cg_maxiter": None, "diago_david_ndim": None,
+             "diago_full_acc": None, "diago_rmm_ndim": None, "diago_rmm_conv": None,
+             "efield": None, "efield_cart": None, "efield_phase": None, "startingpot": None,
+             "startingwfc": None, "tqr": None, "real_space": None})
+        self.diagonalization = 'david'
+        self.conv_thr = 4e-10
+        self.electron_maxstep = 200
+        self.mixing_beta = 4e-1
+        self.set_namelist_name("&ELECTRONS");
 
-    def text(self):
-        out = "&ELECTRONS\n";
-        for k,v in self.options.items(): 
-            out+= k+"="+qe_io.format(v)+"\n";
-        out += "/\n";
-        return out;
-
-    def print(self):
-        print(self.text());

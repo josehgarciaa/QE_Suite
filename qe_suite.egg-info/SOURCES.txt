@@ -29,6 +29,7 @@ setup.cfg
 ./qe_suite/namelists/fcp.py
 ./qe_suite/namelists/handler.py
 ./qe_suite/namelists/ions.py
+./qe_suite/namelists/namelist.py
 ./qe_suite/namelists/system.py
 qe_suite.egg-info/PKG-INFO
 qe_suite.egg-info/SOURCES.txt
