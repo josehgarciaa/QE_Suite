@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Contents &#8212; QESuite alpha documentation</title>
+    <title>QESuite &#8212; QESuite alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Quatum Espresso" href="usage.html" />
+    <link rel="next" title="Documentation" href="usage.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,17 +32,38 @@
 
           <div class="body" role="main">
             
-  <section id="contents">
-<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+  <section id="qesuite">
+<h1>QESuite<a class="headerlink" href="#qesuite" title="Permalink to this headline">¶</a></h1>
+<p>Quantum Espresso Suite (QESuite) is a lightweight package to build input files for quantum espresso automatically. Traditionally,
+the inputfiles needed to be written line by line which is prone to errors. QESuite offer an intuitive way to create these files
+directly within a python interface that will check for the proper variable’s names. Moreover, creating this file within a Python script
+also enable a simpolification of sequential task such as iteration over different variables, convergence tests, etc.</p>
+<p>Additionally, QESuite enables you to create input files directly from the symmetries of structures, provides a set of recipes
+to perform calculations of specific systems  (2D materials, vdW heterostructures, etc).</p>
+<p>Finally, QESuite takes seriously the proper credit to all authors involves in improving the different features, so we provide the
+function <a class="reference internal" href="usage.html#qe_suite.builder.PWInput.cite" title="qe_suite.builder.PWInput.cite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cite()</span></code></a>, which identify all functionalities used to build an inputfile and
+returns a citation string.</p>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">QESuite Structure:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Quatum Espresso</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#module-qe_suite.builder">Modules</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/qe_suite.builder.html">qe_suite.builder</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<section id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
 </section>
 
 
@@ -62,8 +83,9 @@
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">QESuite Structure:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Quatum Espresso</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -71,7 +93,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="usage.html" title="next chapter">Quatum Espresso</a></li>
+      <li>Next: <a href="usage.html" title="next chapter">Documentation</a></li>
   </ul></li>
 </ul>
 </div>

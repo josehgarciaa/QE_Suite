@@ -9,24 +9,9 @@
 
    
    
-   .. rubric:: Functions
-
-   .. autosummary::
-   
-      generate_from_xyz
-   
    
 
    
-   
-   .. rubric:: Classes
-
-   .. autosummary::
-   
-      Calculation
-      QEInput
-      QEInput_
-      Structure
    
    
 

@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Quatum Espresso &#8212; QESuite alpha documentation</title>
+    <title>Documentation &#8212; QESuite alpha documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="api.html" />
-    <link rel="prev" title="Contents" href="index.html" />
+    <link rel="prev" title="QESuite" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -33,9 +33,150 @@
 
           <div class="body" role="main">
             
-  <section id="quatum-espresso">
-<h1>Quatum Espresso<a class="headerlink" href="#quatum-espresso" title="Permalink to this headline">¶</a></h1>
-<p>The build module contains classes to build physical and simulation objects</p>
+  <section id="documentation">
+<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
+<p>The core  of QESuite is the Class <a class="reference internal" href="#qe_suite.builder.PWInput" title="qe_suite.builder.PWInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWInput</span></code></a> which serves as a container of an inputfile.</p>
+<p>PWInput is structured in namelists and cards following the coventions in <a class="reference external" href="https://www.quantum-espresso.org/Doc/INPUT_PW.html#idm3">pw.x manual</a>,
+changing certain inputs into python objects as explained in DICTIONARY DOCUMENTATION. Therefore, there is a unique mapping
+from the <a class="reference internal" href="#qe_suite.builder.PWInput" title="qe_suite.builder.PWInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWInput</span></code></a> object to an inputfile. An example of this is given below</p>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">qe_suite.builder.PWInput</span> <span class="k">as</span> <span class="nn">PWInput</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pw_input</span> <span class="o">=</span> <span class="n">PWInput</span><span class="p">();</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">control</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">calculation</span> <span class="o">=</span> <span class="s1">&#39;scf&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">etot_conv_thr</span> <span class="o">=</span>   <span class="mf">2.0e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">forc_conv_thr</span> <span class="o">=</span>   <span class="mf">1.e-04</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;./out/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;aiida&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">pseudo_dir</span> <span class="o">=</span> <span class="s1">&#39;./pseudo/&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tprnfor</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tstress</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">system</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">degauss</span> <span class="o">=</span>   <span class="mf">1.46997e-02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutrho</span> <span class="o">=</span>   <span class="mf">3.60000e+02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutwfc</span> <span class="o">=</span>   <span class="mf">4.50000e+01</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ibrav</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nat</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nosym</span> <span class="o">=</span> <span class="o">.</span><span class="n">false</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ntyp</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">occupations</span> <span class="o">=</span> <span class="s1">&#39;smearing&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">smearing</span> <span class="o">=</span> <span class="s1">&#39;cold&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">electrons</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">conv_thr</span> <span class="o">=</span>   <span class="mf">4.0e-10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">electron_maxstep</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">mixing_beta</span> <span class="o">=</span>   <span class="mf">4.0e-01</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">cards</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_species</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">12.0107</span><span class="p">,</span><span class="n">C</span><span class="o">.</span><span class="n">pbesol</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="n">kjpaw_psl</span><span class="mf">.1.0.0</span><span class="o">.</span><span class="n">UPF</span><span class="p">)</span> <span class="p">};</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_postions</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;crystal&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_postions</span> <span class="o">=</span>  <span class="p">[</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="mf">0.6667</span><span class="p">,</span><span class="mf">0.3333</span><span class="p">,</span><span class="mf">0.5</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                           <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="mf">0.3333</span><span class="p">,</span><span class="mf">0.6667</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">k_points</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;automatic&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">k_points</span> <span class="o">=</span>  <span class="p">[</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">cell_parameters</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;angstrom&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">cell_parameters</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="mf">2.467</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                                 <span class="p">(</span><span class="o">-</span><span class="mf">1.234</span><span class="p">,</span> <span class="mf">2.137</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                                 <span class="p">(</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">15.0</span><span class="p">)];</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pw_input</span><span class="o">.</span><span class="n">print</span><span class="p">();</span>
+<span class="go">&amp;CONTROL</span>
+<span class="go">  calculation = &#39;scf&#39;</span>
+<span class="go">  etot_conv_thr =   2.0d-05</span>
+<span class="go">  forc_conv_thr =   1.0d-04</span>
+<span class="go">  outdir = &#39;./out/&#39;</span>
+<span class="go">  prefix = &#39;aiida&#39;</span>
+<span class="go">  pseudo_dir = &#39;./pseudo/&#39;</span>
+<span class="go">  tprnfor = .true.</span>
+<span class="go">  tstress = .true.</span>
+<span class="go">  verbosity = &#39;high&#39;</span>
+<span class="go">/</span>
+<span class="go">&amp;SYSTEM</span>
+<span class="go">  degauss =   1.46997d-02</span>
+<span class="go">  ecutrho =   3.60000d+02</span>
+<span class="go">  ecutwfc =   4.50000d+01</span>
+<span class="go">  ibrav = 0</span>
+<span class="go">  nat = 2</span>
+<span class="go">  nosym = .false.</span>
+<span class="go">  ntyp = 1</span>
+<span class="go">  occupations = &#39;smearing&#39;</span>
+<span class="go">  smearing = &#39;cold&#39;</span>
+<span class="go">/</span>
+<span class="go">&amp;ELECTRONS</span>
+<span class="go">  conv_thr =   4.0d-10</span>
+<span class="go">  electron_maxstep = 80</span>
+<span class="go">  mixing_beta =   4.0d-01</span>
+<span class="go">/</span>
+<span class="go">ATOMIC_SPECIES</span>
+<span class="go">C      12.0107 C.pbesol-n-kjpaw_psl.1.0.0.UPF</span>
+<span class="go">ATOMIC_POSITIONS crystal</span>
+<span class="go">C            0.6667       0.3333       0.5</span>
+<span class="go">C            0.3333       0.6667       0.5</span>
+<span class="go">K_POINTS automatic</span>
+<span class="go">15 15 3 0 0 0</span>
+<span class="go">CELL_PARAMETERS angstrom</span>
+<span class="go">      2.467       0.000       0.0</span>
+<span class="go">    -1.234       2.1367       0.0</span>
+<span class="go">      0.000       0.000      15.0</span>
+</pre></div>
+</div>
+<p>We must higlight however that the previous form is not recommended since no check is performed on the inputs and there are other
+<a class="reference internal" href="#qe_suite.builder.PWInput" title="qe_suite.builder.PWInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWInput</span></code></a> methods that will provided better readibility</p>
+<section id="module-qe_suite.builder">
+<span id="modules"></span><h2>Modules<a class="headerlink" href="#module-qe_suite.builder" title="Permalink to this headline">¶</a></h2>
+<section id="classes">
+<h3>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PWInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'qe_suite'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generator of input files for Quantum Espresso.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><dl class="simple">
+<dt>name:</dt><dd><p>A  name to identify the system.</p>
+</dd>
+<dt>structure:</dt><dd><p>An instance of a <a class="reference internal" href="#qe_suite.builder.Structure" title="qe_suite.builder.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+</dd>
+<dt>Structure:</dt><dd><p>An instance of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Calculation</span></code></p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Methods:</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput.cite">
+<span class="sig-name descname"><span class="pre">cite</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput.cite" title="Permalink to this definition">¶</a></dt>
+<dd><p>The  cite function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput.set_calculation">
+<span class="sig-name descname"><span class="pre">set_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">calc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput.set_calculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The  cite function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput.set_state">
+<span class="sig-name descname"><span class="pre">set_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">two_dimensional</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">insultator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnetic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput.set_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set state function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput.set_structure">
+<span class="sig-name descname"><span class="pre">set_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput.set_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The  cite function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qe_suite.builder.PWInput.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ofname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'out'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.PWInput.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>The  cite function</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="qe_suite.builder.Structure">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fractional_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atomic_symbols</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.Structure" title="Permalink to this definition">¶</a></dt>
@@ -96,29 +237,8 @@ of the crystal, while the third item indicates the inequivalent atoms that canno
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="qe_suite.builder.Calculation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Calculation</span></span><a class="headerlink" href="#qe_suite.builder.Calculation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="qe_suite.builder.QEInput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QEInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">electronic_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#qe_suite.builder.QEInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>A generator of input files for Quantum Espresso.</p>
-<dl class="simple">
-<dt>Structure:</dt><dd><p>An instance of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></p>
-</dd>
-<dt>Structure:</dt><dd><p>An instance of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Calculation</span></code></p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="qe_suite.builder.QEInput.structure">
-<span class="sig-name descname"><span class="pre">structure</span></span><a class="headerlink" href="#qe_suite.builder.QEInput.structure" title="Permalink to this definition">¶</a></dt>
-<dd><p>I am here</p>
-</dd></dl>
-
-</dd></dl>
-
+</section>
+</section>
 </section>
 
 
@@ -138,8 +258,12 @@ of the crystal, while the third item indicates the inequivalent atoms that canno
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">QESuite Structure:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quatum Espresso</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qe_suite.builder">Modules</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -147,7 +271,7 @@ of the crystal, while the third item indicates the inequivalent atoms that canno
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Contents</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">QESuite</a></li>
       <li>Next: <a href="api.html" title="next chapter">API</a></li>
   </ul></li>
 </ul>
