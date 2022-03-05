@@ -51,7 +51,7 @@ from the :py:class:`~qe_suite.builder.PWInput` object to an inputfile. An exampl
   >>>                                 (-1.234, 2.137, 0.0),
   >>>                                 (0.000, 0.000, 15.0)]
   >>> print(str(pw_input))
-  
+
   &CONTROL
   calculation='scf'
   verbosity='high'

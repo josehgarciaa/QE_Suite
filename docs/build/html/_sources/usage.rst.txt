@@ -51,7 +51,7 @@ from the :py:class:`~qe_suite.builder.PWInput` object to an inputfile. An exampl
   >>>                                 (-1.234, 2.137, 0.0),
   >>>                                 (0.000, 0.000, 15.0)]
   >>> print(str(pw_input))
-  
+
   &CONTROL
   calculation='scf'
   verbosity='high'
@@ -81,10 +81,10 @@ from the :py:class:`~qe_suite.builder.PWInput` object to an inputfile. An exampl
   diagonalization='david'
   /
   ATOMIC_SPECIES 
-  C      12.0107 C.pbesol-n-kjpaw_psl.1.0.0.UPF
+  C	12.0107 C.pbesol-n-kjpaw_psl.1.0.0.UPF
   ATOMIC_POSITIONS crystal
-  C        0.6667 0.3333 0.5
-  C        0.3333 0.6667 0.5
+  C	 0.6667 0.3333 0.5
+  C	 0.3333 0.6667 0.5
   K_POINTS automatic
   15 15 3 0 0 0
   CELL_PARAMETERS angstrom
