@@ -39,88 +39,88 @@
 <p>PWInput is structured in namelists and cards following the coventions in <a class="reference external" href="https://www.quantum-espresso.org/Doc/INPUT_PW.html#idm3">pw.x manual</a>,
 changing certain inputs into python objects as explained in DICTIONARY DOCUMENTATION. Therefore, there is a unique mapping
 from the <a class="reference internal" href="#qe_suite.builder.PWInput" title="qe_suite.builder.PWInput"><code class="xref py py-class docutils literal notranslate"><span class="pre">PWInput</span></code></a> object to an inputfile. An example of this is given below</p>
-<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">qe_suite.builder.PWInput</span> <span class="k">as</span> <span class="nn">PWInput</span>
+<div class="highlight-pycon3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">qe_suite.builder</span> <span class="kn">import</span> <span class="n">PWInput</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pw_input</span> <span class="o">=</span> <span class="n">PWInput</span><span class="p">()</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pw_input</span> <span class="o">=</span> <span class="n">PWInput</span><span class="p">();</span>
-
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">control</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">control</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">calculation</span> <span class="o">=</span> <span class="s1">&#39;scf&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">etot_conv_thr</span> <span class="o">=</span>   <span class="mf">2.0e-05</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">forc_conv_thr</span> <span class="o">=</span>   <span class="mf">1.e-04</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">etot_conv_thr</span> <span class="o">=</span> <span class="mf">2.0e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">forc_conv_thr</span> <span class="o">=</span> <span class="mf">1.e-04</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="s1">&#39;./out/&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;aiida&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">pseudo_dir</span> <span class="o">=</span> <span class="s1">&#39;./pseudo/&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tprnfor</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tstress</span> <span class="o">=</span> <span class="o">.</span><span class="n">true</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tprnfor</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">tstress</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">control</span><span class="o">.</span><span class="n">verbosity</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">system</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">degauss</span> <span class="o">=</span>   <span class="mf">1.46997e-02</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutrho</span> <span class="o">=</span>   <span class="mf">3.60000e+02</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutwfc</span> <span class="o">=</span>   <span class="mf">4.50000e+01</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">system</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">degauss</span> <span class="o">=</span> <span class="mf">1.46997e-02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutrho</span> <span class="o">=</span> <span class="mf">3.60000e+02</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ecutwfc</span> <span class="o">=</span> <span class="mf">4.50000e+01</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ibrav</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nat</span> <span class="o">=</span> <span class="mi">2</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nosym</span> <span class="o">=</span> <span class="o">.</span><span class="n">false</span><span class="o">.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nosym</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">ntyp</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">occupations</span> <span class="o">=</span> <span class="s1">&#39;smearing&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">smearing</span> <span class="o">=</span> <span class="s1">&#39;cold&#39;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">electrons</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">conv_thr</span> <span class="o">=</span>   <span class="mf">4.0e-10</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">namelists</span><span class="o">.</span><span class="n">electrons</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">conv_thr</span> <span class="o">=</span> <span class="mf">4.0e-10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">electron_maxstep</span> <span class="o">=</span> <span class="mi">80</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">mixing_beta</span> <span class="o">=</span>   <span class="mf">4.0e-01</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">electrons</span><span class="o">.</span><span class="n">mixing_beta</span> <span class="o">=</span> <span class="mf">4.0e-01</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">cards</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_species</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">12.0107</span><span class="p">,</span><span class="n">C</span><span class="o">.</span><span class="n">pbesol</span><span class="o">-</span><span class="n">n</span><span class="o">-</span><span class="n">kjpaw_psl</span><span class="mf">.1.0.0</span><span class="o">.</span><span class="n">UPF</span><span class="p">)</span> <span class="p">};</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_postions</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;crystal&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_postions</span> <span class="o">=</span>  <span class="p">[</span> <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="mf">0.6667</span><span class="p">,</span><span class="mf">0.3333</span><span class="p">,</span><span class="mf">0.5</span><span class="p">),</span>
-<span class="gp">&gt;&gt;&gt; </span>                           <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span><span class="mf">0.3333</span><span class="p">,</span><span class="mf">0.6667</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span> <span class="o">=</span> <span class="n">pw_input</span><span class="o">.</span><span class="n">cards</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_species</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">12.0107</span><span class="p">,</span> <span class="s2">&quot;C.pbesol-n-kjpaw_psl.1.0.0.UPF&quot;</span><span class="p">)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_positions</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;crystal&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">atomic_positions</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mf">0.6667</span><span class="p">,</span> <span class="mf">0.3333</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                         <span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="mf">0.3333</span><span class="p">,</span> <span class="mf">0.6667</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">k_points</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;automatic&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">k_points</span> <span class="o">=</span>  <span class="p">[</span><span class="mi">15</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">k_points</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">cell_parameters</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="s2">&quot;angstrom&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">cell_parameters</span><span class="o">.</span><span class="n">option</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span> <span class="mf">2.467</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-<span class="gp">&gt;&gt;&gt; </span>                                 <span class="p">(</span><span class="o">-</span><span class="mf">1.234</span><span class="p">,</span> <span class="mf">2.137</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
-<span class="gp">&gt;&gt;&gt; </span>                                 <span class="p">(</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span><span class="mf">15.0</span><span class="p">)];</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cards</span><span class="o">.</span><span class="n">cell_parameters</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">2.467</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                                <span class="p">(</span><span class="o">-</span><span class="mf">1.234</span><span class="p">,</span> <span class="mf">2.137</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+<span class="gp">&gt;&gt;&gt; </span>                                <span class="p">(</span><span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">15.0</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pw_input</span><span class="p">))</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pw_input</span><span class="o">.</span><span class="n">print</span><span class="p">();</span>
 <span class="go">&amp;CONTROL</span>
-<span class="go">  calculation = &#39;scf&#39;</span>
-<span class="go">  etot_conv_thr =   2.0d-05</span>
-<span class="go">  forc_conv_thr =   1.0d-04</span>
-<span class="go">  outdir = &#39;./out/&#39;</span>
-<span class="go">  prefix = &#39;aiida&#39;</span>
-<span class="go">  pseudo_dir = &#39;./pseudo/&#39;</span>
-<span class="go">  tprnfor = .true.</span>
-<span class="go">  tstress = .true.</span>
-<span class="go">  verbosity = &#39;high&#39;</span>
+<span class="go">calculation=&#39;scf&#39;</span>
+<span class="go">verbosity=&#39;high&#39;</span>
+<span class="go">tstress=.TRUE.</span>
+<span class="go">tprnfor=.TRUE.</span>
+<span class="go">outdir=&#39;./out/&#39;</span>
+<span class="go">prefix=&#39;aiida&#39;</span>
+<span class="go">etot_conv_thr=2e-05</span>
+<span class="go">forc_conv_thr=0.0001</span>
+<span class="go">pseudo_dir=&#39;./pseudo/&#39;</span>
 <span class="go">/</span>
 <span class="go">&amp;SYSTEM</span>
-<span class="go">  degauss =   1.46997d-02</span>
-<span class="go">  ecutrho =   3.60000d+02</span>
-<span class="go">  ecutwfc =   4.50000d+01</span>
-<span class="go">  ibrav = 0</span>
-<span class="go">  nat = 2</span>
-<span class="go">  nosym = .false.</span>
-<span class="go">  ntyp = 1</span>
-<span class="go">  occupations = &#39;smearing&#39;</span>
-<span class="go">  smearing = &#39;cold&#39;</span>
+<span class="go">ibrav=0</span>
+<span class="go">nat=2</span>
+<span class="go">ntyp=1</span>
+<span class="go">ecutwfc=45.0</span>
+<span class="go">ecutrho=360.0</span>
+<span class="go">nosym=.FALSE.</span>
+<span class="go">occupations=&#39;smearing&#39;</span>
+<span class="go">degauss=0.0146997</span>
+<span class="go">smearing=&#39;cold&#39;</span>
 <span class="go">/</span>
 <span class="go">&amp;ELECTRONS</span>
-<span class="go">  conv_thr =   4.0d-10</span>
-<span class="go">  electron_maxstep = 80</span>
-<span class="go">  mixing_beta =   4.0d-01</span>
+<span class="go">electron_maxstep=80</span>
+<span class="go">conv_thr=4e-10</span>
+<span class="go">mixing_beta=0.4</span>
+<span class="go">diagonalization=&#39;david&#39;</span>
 <span class="go">/</span>
 <span class="go">ATOMIC_SPECIES</span>
 <span class="go">C      12.0107 C.pbesol-n-kjpaw_psl.1.0.0.UPF</span>
 <span class="go">ATOMIC_POSITIONS crystal</span>
-<span class="go">C            0.6667       0.3333       0.5</span>
-<span class="go">C            0.3333       0.6667       0.5</span>
+<span class="go">C        0.6667 0.3333 0.5</span>
+<span class="go">C        0.3333 0.6667 0.5</span>
 <span class="go">K_POINTS automatic</span>
 <span class="go">15 15 3 0 0 0</span>
 <span class="go">CELL_PARAMETERS angstrom</span>
-<span class="go">      2.467       0.000       0.0</span>
-<span class="go">    -1.234       2.1367       0.0</span>
-<span class="go">      0.000       0.000      15.0</span>
+<span class="go">2.467 0.0 0.0</span>
+<span class="go">-1.234 2.137 0.0</span>
+<span class="go">0.0 0.0 15.0</span>
 </pre></div>
 </div>
 <p>We must higlight however that the previous form is not recommended since no check is performed on the inputs and there are other
