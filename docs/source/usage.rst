@@ -20,8 +20,8 @@ from the :py:class:`~qe_suite.builder.PWInput` object to an inputfile. An exampl
   >>> control.outdir = './out/'
   >>> control.prefix = 'aiida'
   >>> control.pseudo_dir = './pseudo/'
-  >>> control.tprnfor = .true.
-  >>> control.tstress = .true.
+  >>> control.tprnfor = True
+  >>> control.tstress = True
   >>> control.verbosity = 'high'
   >>> 
   >>> system = pw_input.namelists.system;
@@ -30,7 +30,7 @@ from the :py:class:`~qe_suite.builder.PWInput` object to an inputfile. An exampl
   >>> system.ecutwfc =   4.50000e+01
   >>> system.ibrav = 0
   >>> system.nat = 2
-  >>> system.nosym = .false.
+  >>> system.nosym = False
   >>> system.ntyp = 1
   >>> system.occupations = 'smearing'
   >>> system.smearing = 'cold'
