@@ -1,5 +1,4 @@
 from inspect import signature
-from xmlrpc.client import Boolean
 
 import qe_suite
 from .structure import Structure
@@ -32,7 +31,7 @@ class SCF(Calculation):
     def __init__(self, target = "default", pseudo_dir='.' ) -> None:
         super().__init__()
         self.control.calculation = 'scf'
-        self.control.outdir = './out/'
+        self.control.outdir = '.'
         self.control.prefix = 'qe_suite'
         self.control.pseudo_dir = pseudo_dir
         self.control.tprnfor = True
@@ -52,7 +51,7 @@ class SCF(Calculation):
             self.control.forc_conv_thr = 1e-3;
 
 
-    def valid(self) -> Boolean:
+    def valid(self) :
         return True;
 
 

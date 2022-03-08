@@ -30,12 +30,17 @@ class PWInput():
         if calculation is not None:
             if calculation.valid():
                 self.namelists.set( control = calculation.get_control() );
+                self.cards.set( k_points = calculation.get_k_points() )
+
+        if system is not None:
+            if system.valid():
+                self.namelists.set( system = system.get_system() );
                 self.cards.set( 
-                                k_points = calculation.get_k_points(),
                                 atomic_species  = system.get_atomic_species(),
                                 atomic_positions= system.get_atomic_positions(),
                                 cell_parameters = system.get_cell_parameters()
                                 )
+
 
 
     def set_state(self, two_dimensional=False, insultator=False, magnetic=False):
@@ -54,7 +59,7 @@ class PWInput():
         """
         pass
 
-    def write(self, ofname="out"):
+    def write(self, ofname="qe_suite.out"):
 
         with open(ofname, 'w') as f:
             f.write(str(self))

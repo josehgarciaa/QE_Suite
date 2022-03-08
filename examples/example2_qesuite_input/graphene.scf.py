@@ -29,12 +29,12 @@ scf = SCF().set_k_points("automatic", [15, 15, 3, 0, 0, 0])
 
 pw_input = PWInput(calculation = scf, system=graphene  );
 
+#print(pw_input)
+#output_file = "qe_suite.out";
+#pw_input.write(output_file)
 
-output_file = "qe_suite.out";
-pw_input.write(output_file)
 
-
-import subprocess
-proc= subprocess.run(["pw.x -inp "+output_file], shell=True);
+#import subprocess
+#proc= subprocess.run(["pw.x -inp "+output_file], shell=True);
 
 

@@ -7,6 +7,13 @@ class Namelist():
         self.name = ""
         self.parameters = {};
 
+    def set(self, **kwargs ):
+        for k, v in kwargs.items():
+            if (k not in self.parameters) or  (v is  None):
+                raise ValueError("key:",k," does not exists or ",  v, "is None")
+            self.parameters.update({k:v})
+        self.__dict__.update(self.parameters);
+
     def set_name(self,name):
         self.name = name;
 
@@ -29,7 +36,7 @@ class Namelist():
             out = self.name+"\n";
             for k, v in self.get_parameters().items():
                 if v is not None and k != "name":
-                    out += k+"="+qe_io.format(v)+"\n"
+                    out += qe_io.key_format(k)+"="+qe_io.format(v)+"\n"
             out += "/\n"
             return out
         #If all parameters are none it means the namelist is not present

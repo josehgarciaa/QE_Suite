@@ -29,7 +29,10 @@ class System(Namelist):
     """
 
     def __init__(self):
-        self.set_parameters({"ibrav": None, "celldm": None,
+        super().__init__()
+
+        self.set_parameters({"ibrav": None, "celldm_1": None,"celldm_2": None, "celldm_3": None,
+                              "celldm_4": None,"celldm_5": None,"celldm_6": None,
                               "A": None, "B": None, "C": None, "cosAB": None, "cosAC": None, "cosBC": None,
                               "nat": None, "ntyp": None, "nbnd": None, "ecutwfc": None, "ecutrho": None, "ecutfock": None,
                               "tot_charge": None, "starting_charge": None, "tot_magnetization": None, "starting_magnetization": None,
@@ -51,9 +54,9 @@ class System(Namelist):
                               "lgcscf": None, "gcscf_mu": None, "gcscf_conv_thr": None, "gcscf_beta": None, "vdw_corr": None,
                               "london_s6": None, "london_c6": None, "london_rvdw": None, "london_rcut": None, "dftd3_version": None,
                               "dftd3_threebody": None, "ts_vdw_econv_thr": None, "ts_vdw_isolated": None, "xdm_a1": None, "xdm_a2": None,
-                              "space_group": None, "uniqueb": None, "origin_choice": None, "rhombohedral": None})
+                              "space_group": None, "uniqueb": None, "origin_choice": None, "rhombohedral": None});
         self.set_name("&SYSTEM");
-        
+        self.set(ibrav=0)        
 
     def set_bravais_lattice(self, ibrav, celldm):
         self.options["ibrav"] = ibrav

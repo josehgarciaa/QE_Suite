@@ -28,6 +28,7 @@ class Handler:
 
     def get_parameters(self):
         return self.parameters;
+
     def set(self, **kwargs ):
         attributes = self.__dict__;
         for k, v in kwargs.items():
