@@ -1,3 +1,4 @@
 QE_Suite.code-workspace
 *.save
 *.xml
+.vscode
