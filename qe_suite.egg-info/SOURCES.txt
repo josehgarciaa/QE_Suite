@@ -10,18 +10,19 @@ setup.cfg
 ./qe_suite/symmetries.py
 ./qe_suite/vdw.py
 ./qe_suite/builder/__init__.py
-./qe_suite/builder/builder.py
+./qe_suite/builder/_builder.py
 ./qe_suite/builder/calculation.py
-./qe_suite/builder/qe_input.py
+./qe_suite/builder/pw_input.py
 ./qe_suite/builder/structure.py
 ./qe_suite/cards/__init__.py
 ./qe_suite/cards/atomic_positions.py
 ./qe_suite/cards/atomic_species.py
-./qe_suite/cards/cell_params copy.py
-./qe_suite/cards/cell_params.py
+./qe_suite/cards/card.py
+./qe_suite/cards/cell_parameters.py
 ./qe_suite/cards/constraints.py
 ./qe_suite/cards/handler.py
-./qe_suite/cards/kpoints.py
+./qe_suite/cards/k_points.py
+./qe_suite/cards/occupations.py
 ./qe_suite/namelists/__init__.py
 ./qe_suite/namelists/cell.py
 ./qe_suite/namelists/control.py

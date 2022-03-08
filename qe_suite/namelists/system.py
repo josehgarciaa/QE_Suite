@@ -29,7 +29,7 @@ class System(Namelist):
     """
 
     def __init__(self):
-        self.__dict__.update({"ibrav": None, "celldm": None,
+        self.set_parameters({"ibrav": None, "celldm": None,
                               "A": None, "B": None, "C": None, "cosAB": None, "cosAC": None, "cosBC": None,
                               "nat": None, "ntyp": None, "nbnd": None, "ecutwfc": None, "ecutrho": None, "ecutfock": None,
                               "tot_charge": None, "starting_charge": None, "tot_magnetization": None, "starting_magnetization": None,
@@ -52,7 +52,7 @@ class System(Namelist):
                               "london_s6": None, "london_c6": None, "london_rvdw": None, "london_rcut": None, "dftd3_version": None,
                               "dftd3_threebody": None, "ts_vdw_econv_thr": None, "ts_vdw_isolated": None, "xdm_a1": None, "xdm_a2": None,
                               "space_group": None, "uniqueb": None, "origin_choice": None, "rhombohedral": None})
-        self.set_namelist_name("&SYSTEM");
+        self.set_name("&SYSTEM");
         
 
     def set_bravais_lattice(self, ibrav, celldm):

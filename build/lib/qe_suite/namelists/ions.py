@@ -34,7 +34,7 @@ class Ions(Namelist):
     options = dict()
 
     def __init__(self):
-        self.__dict__.update(
+        self.set_parameters(
             {"ion_positions": None, "ion_velocities": None, "ion_dynamics": None,
                 "pot_extrapolation": None, "wfc_extrapolation": None, "remove_rigid_rot": None,
                 "ion_temperature": None, "tempw": None, "tolp": None, "delta_t": None,
@@ -43,4 +43,4 @@ class Ions(Namelist):
                 "w_1": None, "w_2": None, "fire_alpha_init": None, "fire_falpha": None,
                 "fire_nmin": None, "fire_f_inc": None, "fire_f_dec": None, "fire_dtmax": None, "dtmax": None}
         )
-        self.set_namelist_name("&IONS");
+        self.set_name("&IONS");

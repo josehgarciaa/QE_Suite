@@ -29,7 +29,7 @@ class Electrons(Namelist):
     """
 
     def __init__(self):
-        self.__dict__.update(
+        self.set_parameters(
             {"electron_maxstep": None, "scf_must_converge": None,
              "conv_thr": None, "adaptive_thr": None, "conv_thr_init": None,
              "conv_thr_multi": None, "mixing_mode": None, "mixing_beta": None,
@@ -42,5 +42,5 @@ class Electrons(Namelist):
         self.conv_thr = 4e-10
         self.electron_maxstep = 200
         self.mixing_beta = 4e-1
-        self.set_namelist_name("&ELECTRONS");
+        self.set_name("&ELECTRONS");
 

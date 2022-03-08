@@ -1,8 +1,6 @@
-from ase import Atom
-from ase import Atoms
+from .card import Card
 
-
-class AtomicSpecies:
+class AtomicSpecies(Card):
     """The definition of the atomic species used in thecsimulation. 
 
       Attributes:
@@ -32,15 +30,20 @@ class AtomicSpecies:
       >>> # qe_input.control.etot_conv_thr	= 1e04;
     """
 
-    def __init__(self, structure):
-        self.atomic_species = None
+    def __init__(self):
+        self.set_option("");
+        self.set_name( "ATOMIC_SPECIES" );
+
 
     def set_atomic_species(self, species):
-        self.species = species
+        pass
 
     def get_atomic_species(self):
-        return self.species
+        pass
 
     def __str__(self):
-        return "\n"+self.key+"\n" + self.options[self.key]
+        out=self.header();
+        for k,v in self.get_value().items():
+            out+=" {}\t{} {}\n".format(k,*v);
+        return out
 

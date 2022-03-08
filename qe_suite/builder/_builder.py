@@ -3,7 +3,7 @@
 #import qe_suite.symmetries as symmetries
 #import qe_suite.io as qe_io
 
-from . import builder, namelists, cards 
+from . import _builder, namelists, cards 
 
 class QEInput():
     """A generator of input files for Quantum Espresso.
@@ -14,8 +14,6 @@ class QEInput():
         A  name to identify the system. 
     structure:
         An instance of a :py:class:`~qe_suite.Structure`
-    Structure:
-        An instance of a :py:class:`~qe_suite.Calculation`
     """
 
     def __init__(self, name="qe_suite", structure = None, calculation = None, electronic_state = None):
@@ -40,7 +38,7 @@ class QEInput():
 
 
 class QEInput_():
-    """A generator of input files for Quantum Espresso.
+    """A generator of input files for |QuantumEspreso|.
     
     
     """

@@ -8,24 +8,24 @@ import qe_suite.builder as builder;
 #import qe_suite.io as qe_io
 
 
-system = "graphene"
+#system = "graphene"
 
-from qe_suite.namelists.control import Control
+#from qe_suite.namelists.control import Control
 
 #Define Graphene structure
-a= 2.467  # lattice constant in nm which is the default unit. 
-cell = [ [a,0,0], [-a/2, a*m.sqrt(3)/2,0], [0,0,5*a] ];
-fractional_positions = [ [0,0,0.0], [2/3,1/3,0.0] ]
-atomic_symbols = ['C', 'C']
-structure = builder.Structure(cell, fractional_positions, atomic_symbols);
+#a= 2.467  # lattice constant in nm which is the default unit. 
+#cell = [ [a,0,0], [-a/2, a*m.sqrt(3)/2,0], [0,0,5*a] ];
+#fractional_positions = [ [0,0,0.0], [2/3,1/3,0.0] ]
+#atomic_symbols = ['C', 'C']
+#structure = builder.Structure(cell, fractional_positions, atomic_symbols);
 #Evaluate the symmetries of the structure and symmetrize it
-print("The space group is: ", structure.hm_symbol() )
+#print("The space group is: ", structure.hm_symbol() )
 
 
 #Create a configuration file based on graphene's structure
-qe_input = builder.QEInput(name=system, structure= structure);
-qe_input.namelists.control.calculation = "SCF"
-qe_input.write("out");
+#qe_input = builder.QEInput(name=system, structure= structure);
+#qe_input.namelists.control.calculation = "SCF"
+#qe_input.write("out");
 
 
 

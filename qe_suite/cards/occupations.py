@@ -1,7 +1,7 @@
 from ase import Atom
 from ase import Atoms
 
-class handler:
+class Occupations:
     """
     The species class storages and handle everything relate to different atomic species in the simulation.
 
@@ -10,7 +10,6 @@ class handler:
     """
     def __init__(self):
         self.x=0;
-
 
 
 

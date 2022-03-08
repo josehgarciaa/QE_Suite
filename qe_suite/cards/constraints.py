@@ -1,7 +1,7 @@
 from ase import Atom
 from ase import Atoms
 
-class handler:
+class Constraints:
     """
     The species class storages and handle everything relate to different atomic species in the simulation.
 

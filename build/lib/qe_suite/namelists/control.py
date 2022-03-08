@@ -41,7 +41,7 @@ class Control(Namelist):
     """
 
     def __init__(self, calculation=None):
-        self.__dict__.update(
+        self.set_parameters(
             {"calculation": None, "title": None, "verbosity": None,
              "restart_mode": None, "nstep": None, "iprint": None,
              "tstress": None, "tprnfor": None, "dt": None, "outdir": None,
@@ -50,4 +50,4 @@ class Control(Namelist):
              "pseudo_dir": None, "tefield": None, "dipfield": None, "lelfield": None,
              "nberrycyc": None, "lorbm": None, "lberry": None, "gdir": None,
              "nppstr": None, "lfcp": None, "gate": None})
-        self.set_namelist_name("&CONTROL");
+        self.set_name("&CONTROL");
