@@ -1,6 +1,6 @@
 import numpy as np
 from ase import Atom, Atoms
-import spglib as spg
+from .. import symmetries as symm
 
 class Structure(Atoms):
     """An atomic structure.
@@ -31,7 +31,8 @@ class Structure(Atoms):
     >>> s = Structure(cell, fractional_positions, atomic_symbols) ;
     
     """
-    def __init__(self, name,cell, fractional_positions, atomic_symbols):
+    def __init__(self, cell, fractional_positions, atomic_symbols):
+        
         #Check if inputs are arrays
         natm  = len(atomic_symbols);
         arrays = [cell,fractional_positions, atomic_symbols];
@@ -48,50 +49,48 @@ class Structure(Atoms):
         super().__init__(symbols = atomic_symbols,
                          scaled_positions=fractional_positions,
                          cell = cell);
-        self.name = name;
         self.symm_dataset  = None;
-        
-    def _spglib_structure(self):
-        structure = (self.get_cell(),
-                     self.get_scaled_positions(),
-                     self.get_atomic_numbers() 
-                    );
-        return structure;
+    
 
-    def symmetries(self, symprec=1e-2):
-        """Determine the structure's symmetry operations.
+    def get_atomic_positions(self):
+        return ( "crystal",[ (s,*x) for s,x in zip(self.get_chemical_symbols(), self.get_scaled_positions())] );
 
-        Returns:
-        ------------
-        Dictionary:
-            The dictionary consist of three keys \"rotation\", \"translations\", and \"equivalent_atoms\".
-            The first two correspond to combined rotation and translation operator that generate one of the symmetries
-            of the crystal, while the third item indicates the inequivalent atoms that cannot be build using symmetries. 
-            
-            This function returns the same output `spglib.get_symmetry <https://spglib.github.io/spglib/python-spglib.html#get-symmetry>`_
-    """
-        return spg.get_symmetry(self._spglib_structure(), symprec=symprec);
+    def get_cell_parameters(self):
+        return ("angstrom", list(self.get_cell()) );
 
-    def spacegroup(self, symprec=1e-2):
-        """Return the structure's spacegroup as a string.
-        """
-        print("STADANRD CELL",spg.standardize_cell(self._spglib_structure(), symprec=symprec)
-)
-        return spg.get_spacegroup(self._spglib_structure(), symprec=symprec)
+    #COSAS DE SIEMTRIA
+    def get_symmetry_informations(self, symprec=1e-2):
+        symbols= self.get_chemical_symbols();
+        sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
+        num2sym= { i:s for i,s in enumerate(set(self.symbols)) };
+        numbers= [ sym2num[s] for s in self.symbols];
+        #Get the symmetrized structure
+        symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
 
-    def hall_number(self, symprec=1e-2):
-        """Return the structure's hall_number as a string.
-        """
-        if self.symm_dataset is None:
-            self.symm_dataset = spg.get_symmetry_dataset(self._spglib_structure(), symprec=symprec);
-        return self.symm_dataset["hall_number"]
+        symm_dataset = symm.informations(symm_structure, symprec=1e-2);
+        symm_dataset["std_symbols"] = [ num2sym[x] for x in symm_dataset["std_types"] ];
 
+        return symm_dataset;      
 
-    def hm_symbol(self, symprec=1e-2):
-        """Return the structure's  (full) Hermann-Mauguin symbol.
-        """
-        if self.symm_dataset is None:
-            self.symm_dataset = spg.get_symmetry_dataset(self._spglib_structure(), symprec=symprec);
-        
-        spacegroup =spg.get_spacegroup_type( self.hall_number(self) );
-        return spacegroup["international_full"]
+    def symmetrize(self, symprec=1e-2):
+        symm_dataset = self.get_symmetry_informations(symprec=1e-2);
+        print("The structure was symmetrized to the spacegroup:",symm_dataset["international"])
+
+        #Use it for the lattice
+        self.set_cell( symm_dataset["std_lattice"] )
+        self.set_chemical_symbols( symm_dataset[ "std_symbols"] )
+        self.set_scaled_positions( symm_dataset["std_positions"] )
+
+        return self;    
+
+    def symmetrized_band_path(self, symprec=1e-2):
+        symbols= self.get_chemical_symbols();
+        sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
+        numbers= [ sym2num[s] for s in self.symbols];
+        self.symmetrize();
+        symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
+        kpath = symm.band_path( symm_structure, symprec )
+        return kpath
+
+    
+

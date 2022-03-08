@@ -11,23 +11,27 @@ class System:
         self.atomic_positions = None;
 
         self.system = system.System();
-        self.set_structure(structure);
 
     def get_system(self):
             return self.system;
 
     def set_structure(self, structure):
-        self.structure = structure;
-#        symbols = structure.get_chemical_symbols();
-#        self.s.options["nat"]  = len(symbols);
-#        self.s.options["ntyp"]= len(species);
 
-#        if ( self.structure.pbc == (True,True,False) ).all() :
-#            self.s.options["assume_isolated"]='2D';
-#            self.kpts.set_kpoints( self.kpts.get_kpoints(), pbc=self.structure.pbc );
+        #MOVE TO VALID
+#        symbols = list(set( structure.get_chemical_symbols() ));
+#        symbols = ["K", "C"]
+#        defined_pseudos = self.get_atomic_species().get_value().keys();
 
-        #self.ae.set_atomic_species(species);
-        #self.ap.set_atomic_positions(self.structure);
+#        found =  np.all([ np.any([ s==p for p in defined_pseudos])  for s in symbols ]);
+#        if not found:
+#            raise 
+
+        #    print("Falta un pseudo",notFound)
+#        found = ( ( p==p for p in defined_pseudos ) for s in symbols );
+#        print(found)
+
+        self.set_atomic_positions(*structure.get_atomic_positions() )
+        self.set_cell_parameters(*structure.get_cell_parameters() );
 
         return self;
 

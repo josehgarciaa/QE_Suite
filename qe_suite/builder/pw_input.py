@@ -20,8 +20,7 @@ class PWInput():
     """
 
     def __init__(self, name="qe_suite", system=None, calculation=None, electronic_state=None):
-
-        
+      
         self.elec_state = None
         self.structure = None
         self.namelists = namelists.Handler( self.structure, self.structure, self.elec_state)

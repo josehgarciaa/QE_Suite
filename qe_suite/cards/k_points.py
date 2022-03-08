@@ -37,23 +37,6 @@ class KPoints(Card):
         self.set_value( value=None, type=list );
         self.set_name( "K_POINTS" );
 
-    def set_kpoints(self, kpoints, kptype="automatic", pbc=(True, True, True)):
-        s = self
-        s.kptype = kptype
-        if kptype == "automatic":
-            s.kpoints, s.shifts = kpoints
-            s.kpoints = [k if per else 1 for per, k in zip(pbc, s.kpoints)]
-            s.options["K_POINTS"] = s.kptype + \
-                "\n{} {} {} {} {} {} ".format(*s.kpoints, *s.shifts)
-        if kptype == "crystal_b":
-            s.kpoints = []
-            for k, v in kpoints.items():
-                s.kpoints += list(v)
-            # Save kpoints as text
-            s.options["K_POINTS"] = s.kptype+"\n"+str(len(s.kpoints))
-            for kp in s.kpoints:
-                s.options["K_POINTS"] += "\n {} {} {} 1 ".format(*list(kp))
-
     def get_kpoints(self):
         s = self
         if s.kptype == "automatic":
@@ -69,8 +52,8 @@ class KPoints(Card):
             return out+" {} {} {} {} {} {}\n".format(*self.get_value());
 
         #else tpiba  | crystal | tpiba_b | crystal_b | tpiba_c | crystal_c
-        nks = len(self.get_value());
-        out+= str(nks);
-        for v in self.get_value():
-            out+= " {} {} {} {}\n".format(*v);
+        kpoints = self.get_value();
+        out+= str(len(kpoints))+"\n";
+        for kp in kpoints:
+            out+= " {} {} {} 1\n".format(*kp);
         return out

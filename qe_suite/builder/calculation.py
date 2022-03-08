@@ -1,6 +1,3 @@
-from inspect import signature
-
-import qe_suite
 from .structure import Structure
 from ..namelists import control
 from ..cards import   k_points
@@ -35,7 +32,7 @@ class SCF(Calculation):
     def __init__(self, target = "default", pseudo_dir='.' ) -> None:
         super().__init__()
         self.control.calculation = 'scf'
-        self.control.outdir = '.'
+        self.control.outdir = './qe_suite/'
         self.control.prefix = 'qe_suite'
         self.control.pseudo_dir = pseudo_dir
         self.control.tprnfor = True
@@ -55,30 +52,60 @@ class SCF(Calculation):
             self.control.forc_conv_thr = 1e-3;
 
 
-    def valid(self) :
+    def valid(self):
         return True;
 
 
-
+from pathlib import Path
+import errno
 class NSCF(Calculation):
 
     def __init__(self, scf = None , startingpot='file' ) -> None:
         super().__init__()
         self.control = scf.get_control();
         self.control.calculation = 'nscf'
-        self.control.startingpot = startingpot
-        print("Check if startingpot/charge-density.xml exists")
+        self.k_points         = None;
 
 
+
+        prefix = self.control.prefix;
+        outdir = self.control.outdir;
+        xml_0 = outdir+prefix+".save/data-file-schema.xml";
+        xml_1 = outdir+prefix+".xml";
+        if ( not Path(xml_0).is_file()) and ( not Path(xml_1).is_file()):
+            print("A NSCF calculation requires a valid xml file either at",xml_0, "or", xml_1)
+            raise FileNotFoundError
+
+        def valid(self) :
+            return True;
 
 #types = [ 'bands', 'relax','md', 'vc-relax', 'vc-md'];
+from pathlib import Path
+import errno
 
-
-class NSCF(Calculation):
+class Bands(Calculation):
 
     def __init__(self, scf = None , startingpot='file' ) -> None:
         super().__init__()
         self.control = scf.get_control();
-        self.control.calculation = 'nscf'
-        self.control.startingpot = startingpot
-        print("Check if startingpot/charge-density.xml exists")
+        self.control.calculation = "bands";
+
+        prefix = self.control.prefix;
+        outdir = self.control.outdir;
+        xml_0 = outdir+prefix+".save/data-file-schema.xml";
+        xml_1 = outdir+prefix+".xml";
+        if ( not Path(xml_0).is_file()) and ( not Path(xml_1).is_file()):
+            print("A Bands calculation requires a valid xml file either at",xml_0, "or", xml_1)
+            raise FileNotFoundError
+
+
+    def set_band_path(self, bandpath):
+        kpoints = [];
+        for kps in bandpath.values():
+            kpoints+= list(kps)
+        self.k_points = k_points.KPoints()
+        self.k_points.set("crystal_b", kpoints)
+        return self
+
+    def valid(self) :
+        return True;
