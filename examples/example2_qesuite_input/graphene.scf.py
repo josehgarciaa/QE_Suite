@@ -23,12 +23,18 @@ graphene.set_cell_parameters("angstrom",
                          [(2.467, 0.000, 0.0),
                           (-1.234, 2.137, 0.0),
                           (0.000, 0.000, 15.0)]);
-graphene.use_structure_as_symmetries();
-graphene.refine_symmetries();
-
 
 
 scf = SCF().set_k_points("automatic", [15, 15, 3, 0, 0, 0])
 
 pw_input = PWInput(calculation = scf, system=graphene  );
-pw_input.write("calculation.out")
+
+
+output_file = "qe_suite.out";
+pw_input.write(output_file)
+
+
+import subprocess
+proc= subprocess.run(["pw.x -inp "+output_file], shell=True);
+
+
