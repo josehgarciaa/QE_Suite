@@ -11,9 +11,9 @@ control = pw_input.namelists.control
 control.calculation = 'scf'
 control.etot_conv_thr = 2.0e-05
 control.forc_conv_thr = 1.e-04
-control.outdir = './out/'
-control.prefix = 'aiida'
-control.pseudo_dir = './pseudo/'
+control.outdir = '.'
+control.prefix = 'qe_suite'
+control.pseudo_dir = '../SSSP'
 control.tprnfor = True
 control.tstress = True
 control.verbosity = 'high'
@@ -47,6 +47,10 @@ cards.cell_parameters.value = [(2.467, 0.000, 0.0),
                                 (0.000, 0.000, 15.0)]
 
 
-print(str(pw_input))
+output_file = "qe_suite.out";
+pw_input.write(output_file)
 
-pw_input.write("out")
+import subprocess
+
+#subprocess.run(["ls", "-l"])  # doesn't capture output
+proc= subprocess.run(["pw.x -inp "+output_file], shell=True);
