@@ -58,9 +58,9 @@ class System:
             self.cell_parameters = cell_parameters.CellParameters()
         self.cell_parameters.set(option,value);
 
-        celdm1 = np.min(np.linalg.norm(value, axis=1));
-        self.system.set( celldm_1=celdm1 )
-        print(self.system)
+        lat_const = np.min(np.linalg.norm(value, axis=1));
+        if self.system.ibrav!=0:    
+           self.system.set( A=lat_const )
         return self;
 
     def get_cell_parameters(self):

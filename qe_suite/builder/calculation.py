@@ -10,6 +10,10 @@ class Calculation():
         self.control          = control.Control();
         self.k_points         = None;
 
+    def set_pseudopot_dir(self, psdir):
+        self.control.pseudo_dir = psdir
+        return self;
+
     def set_control(self, control):
         return self.control;
 

@@ -6,7 +6,12 @@ outdir='.'
 prefix='qe_suite'
 etot_conv_thr=0.0001
 forc_conv_thr=0.001
-pseudo_dir='.'
+pseudo_dir='../SSSP'
+/
+&SYSTEM
+ibrav=0
+nat=2
+ntyp=1
 /
 &ELECTRONS
 electron_maxstep=200
