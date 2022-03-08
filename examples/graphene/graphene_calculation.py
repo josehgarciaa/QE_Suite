@@ -22,7 +22,4 @@ scf.set_cell_parameters("angstrom",
                           (0.000, 0.000, 15.0)])
 
 pw_input = PWInput(calculation = scf );
-
-
-
-calc = SCF()
+pw_input.write("calculation.out")

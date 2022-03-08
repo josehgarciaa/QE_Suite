@@ -18,6 +18,14 @@ class Handler:
             "fpc": FCP()};
         self.__dict__.update(self.parameters); #passed by reference!
 
+    def set(self, **kwargs ):
+        attributes = self.__dict__;
+        for k, v in kwargs.items():
+            print(k,v)
+            if (k not in attributes) or  (v is  None):
+                raise ValueError("key:",k," does not exists or ",  v, "is None")
+            attributes.update({k:v})
+            
     def __str__(self):
         out = ""
         for key, value in self.parameters.items():

@@ -2,12 +2,13 @@
 
 
 class Card:
-
-    def __init__(self):
-        self.option= "";
-        self.value = None;
-        self.name  = None;
-        self.type  = None;
+    
+    def __init__(self, option="", value=None, name=None, type=None):
+        self.option = option;
+        self.value = value;
+        self.name  = name;
+        self.type  = type;
+        pass
 
     def set_name(self,name):
         self.name = name;

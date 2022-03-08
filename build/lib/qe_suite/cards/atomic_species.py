@@ -31,15 +31,7 @@ class AtomicSpecies(Card):
     """
 
     def __init__(self):
-        self.set_option("");
-        self.set_name( "ATOMIC_SPECIES" );
-
-
-    def set_atomic_species(self, species):
-        pass
-
-    def get_atomic_species(self):
-        pass
+        super().__init__( value=None, name="ATOMIC_SPECIES", type=dict);
 
     def __str__(self):
         out=self.header();

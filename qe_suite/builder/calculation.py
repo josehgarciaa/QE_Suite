@@ -1,6 +1,10 @@
+from inspect import signature
+from xmlrpc.client import Boolean
+
+import qe_suite
 from .structure import Structure
 from ..namelists import control
-from ..cards import atomic_species, atomic_positions, cell_parameters, k_points
+from ..cards import  atomic_species, atomic_positions, cell_parameters, k_points
 class Calculation():
     
     def __init__(self) -> None:
@@ -9,32 +13,45 @@ class Calculation():
         self.atomic_positions = None;
         self.k_points         = None;
         self.cell_parameters  = None;
-    def get_control(self):
+
+
+    def set_control(self, control):
         return self.control;
 
-    def get_atomic_positions(self):
-        return self.atomic_positions;
+    def get_control(self):
+        return self.control;
 
     def set_atomic_species(self, value):
         if self.atomic_species is None:
             self.atomic_species = atomic_species.AtomicSpecies();
-        self.atomic_species.set("",value);
-        
+        self.atomic_species.set("", value);
+
+    def get_atomic_species(self):
+            return self.atomic_species
+
     def set_atomic_positions(self, option, value):
         if self.atomic_positions is None:
             self.atomic_positions = atomic_positions.AtomicPositions()
         self.atomic_positions.set(option,value);
-        
+
+    def get_atomic_positions(self) :
+        return self.atomic_positions;
+
     def set_k_points(self, option, value):
         if self.k_points is None:
             self.k_points = k_points.KPoints()
         self.k_points.set(option,value);
-        
+
+    def get_k_points(self):
+        return self.k_points;
+
     def set_cell_parameters(self, option, value):
         if self.cell_parameters is None:
             self.cell_parameters = cell_parameters.CellParameters()
         self.cell_parameters.set(option,value);
 
+    def get_cell_parameters(self):
+        return self.cell_parameters;
     
         
 class SCF(Calculation):
@@ -50,19 +67,21 @@ class SCF(Calculation):
 
         if target == "precission":
             self.control.etot_conv_thr = 1e-6;
-            self.control.etot_conv_thr = 1e-3;
+            self.control.forc_conv_thr = 1e-3;
 
 
         if target == "efficiency":
             self.control.etot_conv_thr = 1e-5;
-            self.control.etot_conv_thr = 1e-4;
+            self.control.forc_conv_thr = 1e-4;
 
         if target == "default":
             self.control.etot_conv_thr = 1e-4;
-            self.control.etot_conv_thr = 1e-3;
+            self.control.forc_conv_thr = 1e-3;
 
         self.atomic_positions = None;        
         
+    def valid(self) -> Boolean:
+        return True;
 
 
 
