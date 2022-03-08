@@ -4,13 +4,14 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 sys.path.insert(0, os.path.abspath('.'))
 
+from math import sqrt
+
+from qe_suite.builder import PWInput, SCF
 
 
-from qe_suite.builder import PWInput
-from qe_suite.builder import SCF
 
-
-scf = SCF()
+#Define calculation
+scf = SCF();
 scf.set_atomic_species( {"C": (12.0107, "C.pbesol-n-kjpaw_psl.1.0.0.UPF")} )
 scf.set_k_points("automatic", [15, 15, 3, 0, 0, 0])
 scf.set_atomic_positions("crystal",
@@ -21,5 +22,5 @@ scf.set_cell_parameters("angstrom",
                           (-1.234, 2.137, 0.0),
                           (0.000, 0.000, 15.0)])
 
-pw_input = PWInput(calculation = scf );
+pw_input = PWInput(calculation = scf,  );
 pw_input.write("calculation.out")

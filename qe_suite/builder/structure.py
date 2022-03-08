@@ -31,7 +31,7 @@ class Structure(Atoms):
     >>> s = Structure(cell, fractional_positions, atomic_symbols) ;
     
     """
-    def __init__(self, cell, fractional_positions, atomic_symbols):
+    def __init__(self, name,cell, fractional_positions, atomic_symbols):
         #Check if inputs are arrays
         natm  = len(atomic_symbols);
         arrays = [cell,fractional_positions, atomic_symbols];
@@ -48,7 +48,7 @@ class Structure(Atoms):
         super().__init__(symbols = atomic_symbols,
                          scaled_positions=fractional_positions,
                          cell = cell);
-
+        self.name = name;
         self.symm_dataset  = None;
         
     def _spglib_structure(self):

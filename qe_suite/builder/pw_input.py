@@ -19,10 +19,11 @@ class PWInput():
     Methods:
     """
 
-    def __init__(self, name="qe_suite", structure=None, calculation=None, electronic_state=None):
+    def __init__(self, name="qe_suite", system=None, calculation=None, electronic_state=None):
 
+        
         self.elec_state = None
-        self.structure = structure
+        self.structure = None
         self.namelists = namelists.Handler( self.structure, self.structure, self.elec_state)
         self.cards     = cards.Handler( self.structure, self.structure, self.elec_state)
         
@@ -30,10 +31,10 @@ class PWInput():
             if calculation.valid():
                 self.namelists.set( control = calculation.get_control() );
                 self.cards.set( 
-                                atomic_species= calculation.get_atomic_species(),
-                                atomic_positions = calculation.get_atomic_positions(),
                                 k_points = calculation.get_k_points(),
-                                cell_parameters  = calculation.get_cell_parameters()
+                                atomic_species  = system.get_atomic_species(),
+                                atomic_positions= system.get_atomic_positions(),
+                                cell_parameters = system.get_cell_parameters()
                                 )
 
 
@@ -44,10 +45,8 @@ class PWInput():
         pass
 
     def set_structure(self, structure):
-        """
-        The  cite function 
-        """
-        pass
+        print("I am setting the structure")
+        return self;
 
     def set_calculation(self, calc):
         """
