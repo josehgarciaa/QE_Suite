@@ -9,7 +9,7 @@ class System:
         self.atomic_species   = None;
         self.cell_parameters  = None;
         self.atomic_positions = None;
-
+        self.periodicity      = (True,True,True);
         self.system = system.System();
 
     def get_system(self):
@@ -34,7 +34,6 @@ class System:
         self.set_cell_parameters(*structure.get_cell_parameters() );
 
         return self;
-
 
     def set_atomic_species(self, value):       
         if self.atomic_species is None:

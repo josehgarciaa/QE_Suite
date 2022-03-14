@@ -1,3 +1,5 @@
 {
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+    "esbonio.server.enabled": true,
+    "esbonio.sphinx.confDir": "/data/jgarcia/codes/QE_Suite/docs/source"
 }

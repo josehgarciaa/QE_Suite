@@ -44,19 +44,28 @@ class Structure(Atoms):
                 print("The input", a, " in Structure does not have the proper type ")
                 raise
             arrays[i].reshape(s);
-            
+
+        self.periodicity= (True, True, True)            
         #To be replaced by my own functions
         super().__init__(symbols = atomic_symbols,
                          scaled_positions=fractional_positions,
-                         cell = cell);
+                         cell = cell,
+                         pbc = self.periodicity);
         self.symm_dataset  = None;
     
+
 
     def get_atomic_positions(self):
         return ( "crystal",[ (s,*x) for s,x in zip(self.get_chemical_symbols(), self.get_scaled_positions())] );
 
+
     def get_cell_parameters(self):
         return ("angstrom", list(self.get_cell()) );
+
+    def get_reciprocal_vectors(self):
+        return np.linalg.inv(self.get_cell()).T*2*np.pi;
+
+
 
     #COSAS DE SIEMTRIA
     def get_symmetry_informations(self, symprec=1e-2):
@@ -72,6 +81,17 @@ class Structure(Atoms):
 
         return symm_dataset;      
 
+    def get_periodicity(self):
+        return self.get_pbc();
+
+    def set_periodicity(self,periodicity):
+            self.set_pbc(periodicity)
+            return self
+
+    def set_as_2D(self):
+        self.set_periodicity((True, True,False))
+        return self
+
     def symmetrize(self, symprec=1e-2):
         symm_dataset = self.get_symmetry_informations(symprec=1e-2);
         print("The structure was symmetrized to the spacegroup:",symm_dataset["international"])
@@ -83,6 +103,18 @@ class Structure(Atoms):
 
         return self;    
 
+
+    def get_kpoints(self,type="automatic", kp_distance=0.15, shifts=[1,1,1]):
+
+        rec_vec_lengths = np.linalg.norm( self.get_reciprocal_vectors(),axis=1 );
+        rec_vec_divs    = rec_vec_lengths/kp_distance
+        kpoints = np.ceil(rec_vec_divs ).astype(int)
+        not_periodic = np.logical_not(self.get_periodicity());
+        kpoints[  not_periodic] = 1;
+
+        return [*kpoints,*shifts]
+
+
     def symmetrized_band_path(self, symprec=1e-2):
         symbols= self.get_chemical_symbols();
         sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
@@ -90,6 +122,10 @@ class Structure(Atoms):
         self.symmetrize();
         symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
         kpath = symm.band_path( symm_structure, symprec )
+
+        path_norm = np.linalg.norm( np.array(list(kpath.values())),axis=1);
+        print("kpath")
+
         return kpath
 
     
