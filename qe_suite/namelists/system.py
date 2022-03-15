@@ -58,13 +58,8 @@ class System(Namelist):
         self.set_name("&SYSTEM");
         self.set(ibrav=0)        
 
-    def set_bravais_lattice(self, ibrav, celldm):
-        self.options["ibrav"] = ibrav
-        self.celldm = celldm
 
-    def set_cutoff(self, ecutwfc, ecutrho=None):
-        if ecutrho is None:
-            ecutrho = 4*ecutwfc
-        self.options["ecutwfc"] = ecutwfc
-        self.options["ecutrho"] = ecutrho
 
+    def set_numbands(self, nbnd ):
+        self.set(nbnd=nbnd);
+        return self;

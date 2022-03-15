@@ -11,8 +11,5 @@ def band_path( structure, symprec ):
     #Get the paths compatibles with the periodic boundary conditions
     coords= kp_path['point_coords'];    
     path  = kp_path["path"];
-    labels= coords.keys();
-    path  = [ (l1,l2)  for l1,l2 in path if (l1 in labels) and (l2 in labels) ]
-    density = np.ones(len(path), dtype=int)*20;
-    kpath  = { (l1,l2):np.linspace(coords[l1],coords[l2],n,endpoint=False )  for (l1,l2),n in zip(path,density) };
-    return kpath;
+    return coords,path;
+

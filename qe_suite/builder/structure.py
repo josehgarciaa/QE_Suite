@@ -115,16 +115,35 @@ class Structure(Atoms):
         return [*kpoints,*shifts]
 
 
-    def symmetrized_band_path(self, symprec=1e-2):
+    def symmetrized_band_path(self, symprec=1e-2, density=None):
         symbols= self.get_chemical_symbols();
         sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
         numbers= [ sym2num[s] for s in self.symbols];
         self.symmetrize();
         symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
-        kpath = symm.band_path( symm_structure, symprec )
 
-        path_norm = np.linalg.norm( np.array(list(kpath.values())),axis=1);
-        print("kpath")
+        hsymm_points,path = symm.band_path( symm_structure, symprec );
+        labels = np.array(list(hsymm_points.keys()))
+        coords = np.array(list(hsymm_points.values()));
+        #When a system is non periodic in a given direction, any
+        #displacement along that direction is forbiden. Therefore
+        #we compare the coordinates with zero to identify those
+        #compatible with non_periodic directions, i.e, the Gamma
+        #point [0,0,0] is always compatible with any non periodic system
+        non_pbc_comp_coords = np.isclose(coords,[0,0,0]);
+
+        #We negate the periodicty flags to obtain non periodic directions if any
+        #and compare those directions with the compatible coordinates with non_pbc directions
+        non_pbc   =  np.logical_not(self.get_periodicity());
+        comp_index=  np.all(non_pbc_comp_coords[:,non_pbc],axis=1);
+        #The outcomes of this process are all high symmetry points
+        #compatible with the periodicity of the system
+        hsymm_points = dict(zip(labels[comp_index], coords[comp_index]));
+        labels = hsymm_points.keys()
+        path  = [ (l1,l2)  for l1,l2 in path if (l1 in labels) and (l2 in labels) ]
+
+        density = np.ones(len(path), dtype=int)*20;
+        kpath  = { (l1,l2):np.linspace(hsymm_points[l1],hsymm_points[l2],n,endpoint=False )  for (l1,l2),n in zip(path,density) };
 
         return kpath
 

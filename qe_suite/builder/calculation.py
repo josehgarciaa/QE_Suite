@@ -66,8 +66,6 @@ class NSCF(Calculation):
         self.control.calculation = 'nscf'
         self.k_points         = None;
 
-
-
         prefix = self.control.prefix;
         outdir = self.control.outdir;
         xml_0 = outdir+prefix+".save/data-file-schema.xml";
@@ -106,6 +104,7 @@ class Bands(Calculation):
         self.k_points = k_points.KPoints()
         self.k_points.set("crystal_b", kpoints)
         return self
+
 
     def valid(self) :
         return True;

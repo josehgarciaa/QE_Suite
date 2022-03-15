@@ -62,7 +62,7 @@ class PWInput():
 
         with open(ofname, 'w') as f:
             f.write(str(self))
-        return 0
+        return ofname
 
 
 

@@ -17,19 +17,6 @@ class System:
 
     def set_structure(self, structure):
 
-        #MOVE TO VALID
-#        symbols = list(set( structure.get_chemical_symbols() ));
-#        symbols = ["K", "C"]
-#        defined_pseudos = self.get_atomic_species().get_value().keys();
-
-#        found =  np.all([ np.any([ s==p for p in defined_pseudos])  for s in symbols ]);
-#        if not found:
-#            raise 
-
-        #    print("Falta un pseudo",notFound)
-#        found = ( ( p==p for p in defined_pseudos ) for s in symbols );
-#        print(found)
-
         self.set_atomic_positions(*structure.get_atomic_positions() )
         self.set_cell_parameters(*structure.get_cell_parameters() );
 
@@ -69,6 +56,9 @@ class System:
     def get_cell_parameters(self):
         return self.cell_parameters;
 
+    def set_numbands(self, nbnd ):
+        self.system.set_numbands(nbnd);
+        return self;
 
     def valid(self):
         return True;
