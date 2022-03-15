@@ -1,5 +1,5 @@
 from .structure import Structure
-from ..namelists import control
+from ..namelists import control,ions,cell
 from ..cards import   k_points
 class Calculation():
     
@@ -108,3 +108,63 @@ class Bands(Calculation):
 
     def valid(self) :
         return True;
+
+
+
+class Relaxation(Calculation):
+        
+    def __init__(self ) -> None:
+        super().__init__()
+#        self.system  = system;
+        self.control.set(calculation="vc-relax");
+        self.ions = ions.Ions();
+        self.cell = cell.Cell();
+
+        self.set_cell_pressure_threshold( threshold=0.1);
+        self.set_ions_dynamics( dynamic= 'bfgs');
+        self.set_cell_dynamics( dynamic= 'bfgs');
+        self.set_cell_do_free( freedom="all");
+
+
+    def set_cell_pressure_threshold(self, threshold=0.1):
+        self.cell.set(press_conv_thr = threshold);
+        return self;
+
+
+    def set_ions_dynamics(self, dynamic):
+        if dynamic not in ('bfgs','damp'):
+            print("not proper dynamics=",dynamic, "in ions_dynamics function")
+            raise ValueError;
+        self.ions.set(ion_dynamics = dynamic);
+        return self;
+
+    def set_cell_dynamics(self, dynamic):
+        if dynamic not in ('bfgs','damp'):
+            print("not proper dynamics=",dynamic, "in cell_dynamics function")
+            raise ValueError;
+        self.cell.set(cell_dynamics = dynamic);
+        return self;
+
+
+    def set_cell_do_free(self, freedom):
+        allowed_freedoms= ('all','ibrav','x','y','z','xy','xz','yz','xyz','shape','volume','2Dxy','2Dshape','epitaxial_ab','epitaxial_ac', 'epitaxial_bc')
+        if freedom not in allowed_freedoms:
+            print("not proper freedom=",freedom, "in set_cell_do_free function")
+            raise ValueError;
+        self.cell.set(cell_dofree = freedom);
+        return self;
+
+    def get_ions(self):
+        return self.ions;
+
+    def get_cell(self):
+        return self.cell;
+
+
+    def valid(self) :
+        return True;
+
+
+
+
+

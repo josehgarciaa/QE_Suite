@@ -1,7 +1,7 @@
 from re import M
 from .. import namelists
 from .. import cards
-
+from ..builder import calculation as calc_type
 
 class PWInput():
     """
@@ -29,7 +29,10 @@ class PWInput():
         if calculation is not None:
             if calculation.valid():
                 self.namelists.set( control = calculation.get_control() );
-                self.cards.set( k_points = calculation.get_k_points() )
+                self.cards.set( k_points = calculation.get_k_points() );
+                if isinstance( calculation, calc_type.Relaxation ):
+                    self.namelists.set( ions = calculation.get_ions() );
+                    self.namelists.set( cell = calculation.get_cell() );
 
         if system is not None:
             if system.valid():
