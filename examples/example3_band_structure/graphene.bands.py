@@ -1,4 +1,11 @@
 # Package directory
+import os
+from re import M
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('.'))
+
+# Package directory
 from math import sqrt
 import qe_suite as qes
 from qe_suite.builder import Structure, System, PWInput

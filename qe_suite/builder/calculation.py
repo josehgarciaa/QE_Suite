@@ -31,26 +31,29 @@ class SCF(Calculation):
 
     def __init__(self, target = "default", pseudo_dir='.' ) -> None:
         super().__init__()
-        self.control.calculation = 'scf'
-        self.control.outdir = './qe_suite/'
-        self.control.prefix = 'qe_suite'
-        self.control.pseudo_dir = pseudo_dir
-        self.control.tprnfor = True
-        self.control.tstress = True
+        self.control= self.get_control();
+        self.control.set(calculation = 'scf')
+        self.control.set(outdir = './qe_suite/')
+        self.control.set(prefix = 'qe_suite')
+        self.control.set(pseudo_dir = pseudo_dir)
+        self.control.set(tprnfor = True)
+        self.control.set(tstress = True)
 
         if target == "precission":
-            self.control.etot_conv_thr = 1e-6;
-            self.control.forc_conv_thr = 1e-3;
+            self.control.set(etot_conv_thr = 1e-6);
+            self.control.set(forc_conv_thr = 1e-3);
 
 
         if target == "efficiency":
-            self.control.etot_conv_thr = 1e-5;
-            self.control.forc_conv_thr = 1e-4;
+            self.control.set(etot_conv_thr = 1e-5);
+            self.control.set(forc_conv_thr = 1e-4);
 
         if target == "default":
-            self.control.etot_conv_thr = 1e-4;
-            self.control.forc_conv_thr = 1e-3;
+            self.control.set(etot_conv_thr = 1e-4);
+            self.control.set(forc_conv_thr = 1e-3);
 
+    def get_control(self):
+        return self.control;
 
     def valid(self):
         return True;
@@ -63,7 +66,7 @@ class NSCF(Calculation):
     def __init__(self, scf = None , startingpot='file' ) -> None:
         super().__init__()
         self.control = scf.get_control();
-        self.control.calculation = 'nscf'
+        self.control.set(calculation = 'nscf');
         self.k_points         = None;
 
         prefix = self.control.prefix;
@@ -77,7 +80,6 @@ class NSCF(Calculation):
         def valid(self) :
             return True;
 
-#types = [ 'bands', 'relax','md', 'vc-relax', 'vc-md'];
 from pathlib import Path
 import errno
 
@@ -111,17 +113,17 @@ class Bands(Calculation):
 
 
 
-class Relaxation(Calculation):
+class Relaxation(SCF):
         
     def __init__(self ) -> None:
         super().__init__()
-#        self.system  = system;
         self.control.set(calculation="vc-relax");
-        self.ions = ions.Ions();
-        self.cell = cell.Cell();
 
-        self.set_cell_pressure_threshold( threshold=0.1);
+        self.ions = ions.Ions();
         self.set_ions_dynamics( dynamic= 'bfgs');
+
+        self.cell = cell.Cell();
+        self.set_cell_pressure_threshold( threshold=0.5);
         self.set_cell_dynamics( dynamic= 'bfgs');
         self.set_cell_do_free( freedom="all");
 

@@ -1,4 +1,10 @@
 # Package directory
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('.'))
+
+# Package directory
 from math import sqrt
 import qe_suite as qes
 from qe_suite.builder import Structure, System, PWInput
@@ -15,7 +21,6 @@ hexagonal.set_as_2D();
 
 #That structure is used to define the system to be study
 graphene = System();
-scf = SCF();
 graphene.set_atomic_species( {"C": (12.0107, "C.pbesol-n-kjpaw_psl.1.0.0.UPF")} )
 graphene.set_structure(hexagonal)
 

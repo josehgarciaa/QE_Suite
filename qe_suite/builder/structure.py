@@ -104,7 +104,7 @@ class Structure(Atoms):
         return self;    
 
 
-    def get_kpoints(self,type="automatic", kp_distance=0.15, shifts=[1,1,1]):
+    def get_kpoints(self,type="automatic", kp_distance=0.25, shifts=[1,1,1]):
 
         rec_vec_lengths = np.linalg.norm( self.get_reciprocal_vectors(),axis=1 );
         rec_vec_divs    = rec_vec_lengths/kp_distance

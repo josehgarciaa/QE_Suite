@@ -11,6 +11,7 @@ class System:
         self.atomic_positions = None;
         self.periodicity      = (True,True,True);
         self.system = system.System();
+        self.set_energy_cutoff(ecutwfc=60, dual=4);
 
     def get_system(self):
             return self.system;
@@ -79,4 +80,8 @@ class System:
     def symmetry_based_bandpath(self,):
         print("Get the band path")
 
+    def set_energy_cutoff(self, ecutwfc, dual=4):
+        self.system.set(ecutwfc=ecutwfc);
+        self.system.set(ecutrho=dual*ecutwfc);
+        return self;
 

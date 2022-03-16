@@ -3,7 +3,7 @@
 import subprocess
 
 
-def run_pw(inpfile=None, logfile=None, shell=True):
+def run_pw(inpfile=None, logfile=None, shell=True, qe_path=""):
     try:
         with open(inpfile) as f:
             pass
@@ -13,6 +13,6 @@ def run_pw(inpfile=None, logfile=None, shell=True):
     if logfile is None:
         logfile = inpfile+".log"
 
-    proc= subprocess.run(["pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
+    proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
 
 

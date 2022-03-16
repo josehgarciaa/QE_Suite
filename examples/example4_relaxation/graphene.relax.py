@@ -24,15 +24,13 @@ graphene = System();
 graphene.set_atomic_species( {"C": (12.0107, "C.pbesol-n-kjpaw_psl.1.0.0.UPF")} )
 graphene.set_structure(hexagonal)
 
-
 #Then we create a self consistent calculation to determine the density matrix
-relax = Relaxation().set_pseudopot_dir("../SSSP").set_cell_do_free('ibrav');
+relax = Relaxation().set_pseudopot_dir("../SSSP").set_cell_do_free('all');
 relax.set_k_points("automatic", hexagonal.get_kpoints(type="automatic"))
 
 
 pw_input = PWInput(calculation = relax, system=graphene  );
-pw_input.write("qe_suite.relax.inp")
-qes.run_pw(inpfile=pw_input.write("qe_suite.scf.inp") );
+qes.run_pw(inpfile=pw_input.write("qe_suite.relax.inp"),shell=False );
 
 
 
