@@ -7,6 +7,7 @@ setup.cfg
 ./qe_suite/format.py
 ./qe_suite/get_sssp_pseudos.py
 ./qe_suite/io.py
+./qe_suite/symmetries.olds.py
 ./qe_suite/symmetries.py
 ./qe_suite/vdw.py
 ./qe_suite/builder/__init__.py
@@ -14,6 +15,7 @@ setup.cfg
 ./qe_suite/builder/calculation.py
 ./qe_suite/builder/pw_input.py
 ./qe_suite/builder/structure.py
+./qe_suite/builder/system.py
 ./qe_suite/cards/__init__.py
 ./qe_suite/cards/atomic_positions.py
 ./qe_suite/cards/atomic_species.py

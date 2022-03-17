@@ -1,7 +1,7 @@
 def remove_double(c, string):
     c=str(c);
     while c+c in string:
-        string = string.replace('  ', ' ')
+        string = string.replace(c+c, c)
     return string
 def remove_empty(x):
     try:

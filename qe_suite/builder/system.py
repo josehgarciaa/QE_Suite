@@ -1,4 +1,6 @@
 import numpy as np
+import json
+import qe_suite.constants as qesc
 from ..cards import  atomic_species, atomic_positions, cell_parameters
 from ..namelists import system
 class System:
@@ -11,24 +13,48 @@ class System:
         self.atomic_positions = None;
         self.periodicity      = (True,True,True);
         self.system = system.System();
-        self.set_energy_cutoff(ecutwfc=60, dual=4);
+        self.set_energy_cutoff_wfc(ecutwfc=60, dual=4);
 
     def get_system(self):
             return self.system;
 
-    def set_structure(self, structure):
+    def set_structure(self, structure, use_symmetries=False):
+
+        if use_symmetries:
+            print("I am here")
+            ibrav = structure.get_symmetry_informations()["ibrav"];
+            self.system.set(ibrav=ibrav )
+            if ibrav != 0:
+                A, B, C, cosAB, cosAC, cosBC  = structure.get_crystallographic_constants();
+                self.system.set(A=A, B=B, C=C, cosAB=cosAB, cosAC=cosAC, cosBC=cosBC )
 
         self.set_atomic_positions(*structure.get_atomic_positions() )
         self.set_cell_parameters(*structure.get_cell_parameters() );
 
         return self;
 
-    def set_atomic_species(self, value):       
+    def set_atomic_species(self, species, use_SSSP=None):    
+
+        if use_SSSP is not None:
+            try:
+                f= open(use_SSSP);
+            except:
+                raise FileNotFoundError;
+            psinfo = json.loads(f.read());
+            f.close();
+            
+            max_cutoff_wfc = np.max( [ psinfo[specie]["cutoff_wfc"] for specie in species] )
+            max_cutoff_rho = np.max( [ psinfo[specie]["cutoff_rho"] for specie in species] )
+            self.set_energy_cutoff_wfc(max_cutoff_wfc);
+            self.set_energy_cutoff_rho(max_cutoff_rho);
+
+            species = { specie:(qesc.atomic_masses[specie],psinfo[specie]["filename"]) for specie in species }         
+
         if self.atomic_species is None:
             self.atomic_species = atomic_species.AtomicSpecies();
 
-        self.atomic_species.set("", value);
-        self.system.set( ntyp=len(value) )
+        self.atomic_species.set("", species);
+        self.system.set( ntyp=len(species) )
         return self;
 
     def get_atomic_species(self):
@@ -44,14 +70,13 @@ class System:
     def get_atomic_positions(self) :
         return self.atomic_positions;
 
-    def set_cell_parameters(self, option, value):
-        if self.cell_parameters is None:
-            self.cell_parameters = cell_parameters.CellParameters()
-        self.cell_parameters.set(option,value);
+    def get_ibrav(self):
+        return self.system.ibrav;
 
-        lat_const = np.min(np.linalg.norm(value, axis=1));
-        if self.system.ibrav!=0:    
-           self.system.set( A=lat_const )
+    def set_cell_parameters(self, option, value):
+        if self.cell_parameters is None and self.get_ibrav==0:
+            self.cell_parameters = cell_parameters.CellParameters()
+            self.cell_parameters.set(option,value);
         return self;
 
     def get_cell_parameters(self):
@@ -64,24 +89,18 @@ class System:
     def valid(self):
         return True;
 
-
-    def set_atomic_species_from(self,library = "SSSP"):
-        print(" I will generate the pseudopotentials alone")
-        return self;
-
-
-    def use_structure_as_symmetries(self):
-        print("This flag will determine the symmetries of the structure")
-
-    def refiene_symmetries(self,):
-        print("Get the propert symmetries")
-
-
-    def symmetry_based_bandpath(self,):
-        print("Get the band path")
-
-    def set_energy_cutoff(self, ecutwfc, dual=4):
+    def set_energy_cutoff_wfc(self, ecutwfc, dual=4):
         self.system.set(ecutwfc=ecutwfc);
-        self.system.set(ecutrho=dual*ecutwfc);
+        if self.system.ecutrho is None:
+            self.system.set(ecutrho=dual*ecutwfc);
         return self;
 
+    def set_energy_cutoff_rho(self, ecutrho, dual=4):
+        self.system.set(ecutrho=ecutrho);
+        return self;
+
+    def get_energy_cutoff_wfc(self):
+        return self.system.ecutwfc;
+
+    def get_energy_cutoff_rho(self):
+        return self.system.ecutrho;

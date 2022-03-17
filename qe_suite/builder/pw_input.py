@@ -37,13 +37,12 @@ class PWInput():
         if system is not None:
             if system.valid():
                 self.namelists.set( system = system.get_system() );
-                self.cards.set( 
-                                atomic_species  = system.get_atomic_species(),
-                                atomic_positions= system.get_atomic_positions(),
-                                cell_parameters = system.get_cell_parameters()
-                                )
-
-
+                if system.get_atomic_species() is not None:
+                    self.cards.set( atomic_species = system.get_atomic_species() )
+                if system.get_atomic_positions() is not None:
+                    self.cards.set( atomic_positions=system.get_atomic_positions() )
+                if system.get_cell_parameters() is not None:
+                    self.cards.set( cell_parameters= system.get_cell_parameters() )
 
     def set_state(self, two_dimensional=False, insultator=False, magnetic=False):
         """

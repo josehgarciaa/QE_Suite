@@ -31,7 +31,7 @@ class Structure(Atoms):
     >>> s = Structure(cell, fractional_positions, atomic_symbols) ;
     
     """
-    def __init__(self, cell, fractional_positions, atomic_symbols):
+    def __init__(self, cell, fractional_positions, atomic_symbols, symmetrize=False):
         
         #Check if inputs are arrays
         natm  = len(atomic_symbols);
@@ -52,7 +52,8 @@ class Structure(Atoms):
                          cell = cell,
                          pbc = self.periodicity);
         self.symm_dataset  = None;
-    
+        if symmetrize:
+            self.symmetrize()    
 
 
     def get_atomic_positions(self):
@@ -102,6 +103,17 @@ class Structure(Atoms):
         self.set_scaled_positions( symm_dataset["std_positions"] )
 
         return self;    
+
+
+
+    def get_crystallographic_constants(self):
+        cell = np.array(self.get_cell());
+        norms=np.linalg.norm(cell,axis=1)
+        ncell= cell.dot(np.diag(1/norms))
+        ncell_params = ncell.dot(ncell.T);
+        A,B,C = norms;
+        cosAB,cosAC,cosBC = ncell_params[np.triu_indices(3,k=1)];
+        return A,B,C,cosAB,cosAC,cosBC;
 
 
     def get_kpoints(self,type="automatic", kp_distance=0.25, shifts=[1,1,1]):

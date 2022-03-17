@@ -13,12 +13,12 @@ class Handler:
     def __init__(self, calculation, structure, electronic_state):
         pass
         self.parameters = {
-            "atomic_species": AtomicSpecies(),
-            "atomic_positions": AtomicPositions(),
-            "k_points": KPoints(),
-            "cell_parameters": CellParameters(),
-            "constraints": Constraints(),
-            "occupations": Constraints()
+            "atomic_species": None,
+            "atomic_positions": None,
+            "k_points": None,
+            "cell_parameters": None,
+            "constraints": None,
+            "occupations": None
         }
         self.__dict__.update(self.parameters)
 
@@ -45,9 +45,9 @@ class Handler:
         #Update parameters from the initialize parameters in the class 
         attributes = (self.__dict__)
         self.update_parameters(attributes);
-
         out = "";
         for key, card in self.get_parameters().items():
-            if card.value is not None: #Only initialize cards are shown
-                out+= str(card)
+            if card is not None:
+                if card.value is not None: #Only initialize cards are shown
+                    out+= str(card)
         return out
