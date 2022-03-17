@@ -2,3 +2,6 @@ QE_Suite.code-workspace
 *.save
 *.xml
 .vscode
+.egg-info
+build
+__pycache__ 
