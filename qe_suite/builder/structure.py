@@ -1,7 +1,8 @@
 import numpy as np
 from ase import Atom, Atoms
+from sympy import fraction
 from .. import symmetries as symm
-
+from  .. import parse 
 class Structure(Atoms):
     """An atomic structure.
 
@@ -31,33 +32,20 @@ class Structure(Atoms):
     >>> s = Structure(cell, fractional_positions, atomic_symbols) ;
     
     """
-    def __init__(self, cell, fractional_positions, atomic_symbols, symmetrize=False):
-        
-        #Check if inputs are arrays
-        natm  = len(atomic_symbols);
-        arrays = [cell,fractional_positions, atomic_symbols];
-        shapes= ( (3,3), (natm,3), (natm,1) );
-        for i,(a,s) in enumerate(zip(arrays,shapes)):
-            try:
-                arrays[i] = np.array(a);
-            except TypeError:
-                print("The input", a, " in Structure does not have the proper type ")
-                raise
-            arrays[i].reshape(s);
-
-        self.periodicity= (True, True, True)            
-        #To be replaced by my own functions
-        super().__init__(symbols = atomic_symbols,
-                         scaled_positions=fractional_positions,
-                         cell = cell,
-                         pbc = self.periodicity);
-
+    def __init__(self, cell=None, fractional_positions=None, atomic_symbols=None, symmetrize=False):
+        if all((cell, fractional_positions, atomic_symbols)):
+            super().__init__(symbols = atomic_symbols,
+                             scaled_positions=fractional_positions,
+                             cell = cell)
         self.symprec = 1e-2; 
-        self.symm_dataset = None;
         self.was_symmetrized = False;
         if symmetrize:
             self.symmetrize();
 
+
+    def set_atomic_symbols(self, atomic_symbols):
+        self.set_atomic_numbers(atomic_symbols);
+        return self;
 
     def get_atomic_positions(self):
         return ( "crystal",[ (s,*x) for s,x in zip(self.get_chemical_symbols(), self.get_scaled_positions())] );
@@ -160,4 +148,13 @@ class Structure(Atoms):
 
         return kpath
 
-
+    def load_from(self,xyz_file, cell_file, symmetrize=False):
+        xyz = parse.load_xyz(xyz_file);
+        cell= parse.load_cell(cell_file);
+        atomic_symbols, atomic_positions = list(zip(*xyz));
+        fractional_positions =  list(np.dot(atomic_positions,np.linalg.inv(cell) ))
+        self.__init__(cell=cell, 
+                      fractional_positions=fractional_positions, 
+                      atomic_symbols=atomic_symbols,\
+                      symmetrize=symmetrize);
+        return self

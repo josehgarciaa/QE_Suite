@@ -1,0 +1,49 @@
+&CONTROL
+calculation='vc-relax'
+tstress=.TRUE.
+tprnfor=.TRUE.
+outdir='./qe_suite/'
+prefix='qe_suite'
+etot_conv_thr=0.0001
+forc_conv_thr=0.001
+pseudo_dir='../SSSP'
+/
+&SYSTEM
+ibrav=-12
+A=16.451
+B=5.75
+C=5.92
+cosAB=0.0
+cosAC=2.2034858218200506e-17
+cosBC=0.0
+nat=6
+ntyp=2
+ecutwfc=50.0
+ecutrho=240.0
+/
+&ELECTRONS
+electron_maxstep=200
+conv_thr=4e-10
+mixing_beta=0.4
+diagonalization='david'
+/
+&IONS
+ion_dynamics='bfgs'
+/
+&CELL
+cell_dynamics='bfgs'
+press_conv_thr=0.5
+cell_dofree='ibrav'
+/
+ATOMIC_SPECIES 
+ Pd	106.42 Pd_ONCV_PBEsol-1.0.upf
+ Se	78.96 se_pbesol_v1.uspp.F.UPF
+ATOMIC_POSITIONS crystal
+Pd	 0.0 0.5 0.5
+Pd	 0.0 0.0 0.0
+Se	 0.9548138131478257 0.11070846883705762 0.6198598607883993
+Se	 0.04518618685217435 0.6107084688370576 0.8801401392116008
+Se	 0.04518618685217435 0.8892915311629424 0.3801401392116007
+Se	 0.9548138131478257 0.3892915311629423 0.11985986078839916
+K_POINTS automatic
+ 2 5 1 1 1 1
