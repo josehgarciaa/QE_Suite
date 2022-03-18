@@ -1,6 +1,7 @@
 
 bohr2Ang = 0.529177211;
 Ang2Bohr = 1/bohr2Ang;
+Ry2eV= 13.605684958731;
 
 
 atomic_masses = {

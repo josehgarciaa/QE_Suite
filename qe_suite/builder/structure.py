@@ -51,9 +51,12 @@ class Structure(Atoms):
                          scaled_positions=fractional_positions,
                          cell = cell,
                          pbc = self.periodicity);
-        self.symm_dataset  = None;
+
+        self.symprec = 1e-2; 
+        self.symm_dataset = None;
+        self.was_symmetrized = False;
         if symmetrize:
-            self.symmetrize()    
+            self.symmetrize();
 
 
     def get_atomic_positions(self):
@@ -67,21 +70,6 @@ class Structure(Atoms):
         return np.linalg.inv(self.get_cell()).T*2*np.pi;
 
 
-
-    #COSAS DE SIEMTRIA
-    def get_symmetry_informations(self, symprec=1e-2):
-        symbols= self.get_chemical_symbols();
-        sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
-        num2sym= { i:s for i,s in enumerate(set(self.symbols)) };
-        numbers= [ sym2num[s] for s in self.symbols];
-        #Get the symmetrized structure
-        symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
-
-        symm_dataset = symm.informations(symm_structure, symprec=1e-2);
-        symm_dataset["std_symbols"] = [ num2sym[x] for x in symm_dataset["std_types"] ];
-
-        return symm_dataset;      
-
     def get_periodicity(self):
         return self.get_pbc();
 
@@ -93,19 +81,6 @@ class Structure(Atoms):
         self.set_periodicity((True, True,False))
         return self
 
-    def symmetrize(self, symprec=1e-2):
-        symm_dataset = self.get_symmetry_informations(symprec=1e-2);
-        print("The structure was symmetrized to the spacegroup:",symm_dataset["international"])
-
-        #Use it for the lattice
-        self.set_cell( symm_dataset["std_lattice"] )
-        self.set_chemical_symbols( symm_dataset[ "std_symbols"] )
-        self.set_scaled_positions( symm_dataset["std_positions"] )
-
-        return self;    
-
-
-
     def get_crystallographic_constants(self):
         cell = np.array(self.get_cell());
         norms=np.linalg.norm(cell,axis=1)
@@ -114,7 +89,6 @@ class Structure(Atoms):
         A,B,C = norms;
         cosAB,cosAC,cosBC = ncell_params[np.triu_indices(3,k=1)];
         return A,B,C,cosAB,cosAC,cosBC;
-
 
     def get_kpoints(self,type="automatic", kp_distance=0.25, shifts=[1,1,1]):
 
@@ -126,15 +100,37 @@ class Structure(Atoms):
 
         return [*kpoints,*shifts]
 
+    #COSAS DE SIEMTRIA
 
-    def symmetrized_band_path(self, symprec=1e-2, density=None):
+    def _get_spglib_structure(self):
         symbols= self.get_chemical_symbols();
         sym2num= { s:i for i,s in enumerate(set(self.symbols)) };
         numbers= [ sym2num[s] for s in self.symbols];
-        self.symmetrize();
-        symm_structure = (self.get_cell(), self.get_scaled_positions(), numbers);
+        return (self.get_cell(), self.get_scaled_positions(), numbers);
 
-        hsymm_points,path = symm.band_path( symm_structure, symprec );
+    def get_symmetry_informations(self):
+        #Get the symmetrized structure
+        symm_structure = self._get_spglib_structure();
+        symm_dataset = symm.informations(symm_structure, symprec=self.symprec);
+        num2sym= { i:s for i,s in enumerate(set(self.get_chemical_symbols())) };
+        symm_dataset["std_symbols"] = [ num2sym[x] for x in symm_dataset["std_types"] ];
+        return symm_dataset;      
+
+    def symmetrize(self):
+        symm_structure = self._get_spglib_structure();
+        symm_dataset = self.get_symmetry_informations();
+        print("The structure was symmetrized to the spacegroup:",symm_dataset["international"])
+
+        #Use it for the lattice
+        self.set_cell( symm_dataset["std_lattice"] )
+        self.set_chemical_symbols( symm_dataset[ "std_symbols"] )
+        self.set_scaled_positions( symm_dataset["std_positions"] )
+        self.was_symmetrized =True;   
+
+        return self;    
+
+    def get_symmetrized_high_symmetry_points(self):
+        hsymm_points,path = symm.band_path( self._get_spglib_structure(), self.symprec );
         labels = np.array(list(hsymm_points.keys()))
         coords = np.array(list(hsymm_points.values()));
         #When a system is non periodic in a given direction, any
@@ -151,6 +147,11 @@ class Structure(Atoms):
         #The outcomes of this process are all high symmetry points
         #compatible with the periodicity of the system
         hsymm_points = dict(zip(labels[comp_index], coords[comp_index]));
+        return hsymm_points;
+
+    def symmetrized_band_path(self, density=None):
+        full_hsymm_points,path = symm.band_path( self._get_spglib_structure(), self.symprec );
+        hsymm_points = self.get_symmetrized_high_symmetry_points();
         labels = hsymm_points.keys()
         path  = [ (l1,l2)  for l1,l2 in path if (l1 in labels) and (l2 in labels) ]
 
@@ -159,5 +160,4 @@ class Structure(Atoms):
 
         return kpath
 
-    
 

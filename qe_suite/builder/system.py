@@ -21,7 +21,6 @@ class System:
     def set_structure(self, structure, use_symmetries=False):
 
         if use_symmetries:
-            print("I am here")
             ibrav = structure.get_symmetry_informations()["ibrav"];
             self.system.set(ibrav=ibrav )
             if ibrav != 0:
