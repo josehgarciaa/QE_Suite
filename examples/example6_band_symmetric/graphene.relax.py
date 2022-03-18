@@ -29,14 +29,23 @@ relax.set_k_points("automatic", hexagonal.get_kpoints(type="automatic"))
 
 pw_input = PWInput(calculation = relax, system=graphene  );
 inpfile=pw_input.write("qe_suite.relax.inp")
-#qes.run_pw(inpfile=pw_input.write("qe_suite.relax.inp"),shell=False );
+qes.run_pw(inpfile=pw_input.write("qe_suite.relax.inp"),shell=False );
 
 #Finally we analyze the system by performing a band structure calculation
 bands = Bands(scf=relax).set_band_path( hexagonal.symmetrized_band_path() );
 pw_input = PWInput(calculation = bands, system=graphene.set_numbands(5) );
 inpfile=pw_input.write("qe_suite.bands.inp")
-#qes.run_pw(inpfile=pw_input.write("qe_suite.bands.inp") );
+qes.run_pw(inpfile=pw_input.write("qe_suite.bands.inp") );
 
 
+import qe_suite.parse as parse
+import matplotlib.pyplot as plt
 
+bs = parse.BandStructure(xml="qe_suite/qe_suite.xml");
+hsp =hexagonal.get_symmetrized_high_symmetry_points();
 
+for band in bs.bands(shift_Efermi=True):
+    plt.plot(*band);
+plt.xticks( *bs.xticks_high_symmetry_points( hsp= hsp ) );
+plt.ylabel( bs.get_ylabel() );
+plt.savefig('band_structure.pdf');  
