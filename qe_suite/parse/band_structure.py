@@ -10,9 +10,11 @@ class BandStructure():
         self.xml=None;
         self.tree= None;
         self.kpoints= None;
+        self.nelec  = None;
         self.ylabel = "E (eV)"
         self.set_xml_tree(xml=xml);
         self.set_kpoints();
+
 
     def set_xml_tree(self,xml=None):
         if xml is not None:
@@ -39,6 +41,12 @@ class BandStructure():
         return xticks, labels;
 
 
+    def get_num_electrons(self):
+        if self.nelec is None:
+            root= self.tree.getroot()
+            bs  = root.find("output/band_structure");
+            self.nelec = int(float(next(bs.iter("nelec")).text));           
+        return self.nelec
 
     def set_kpoints(self):
         root = self.tree.getroot()

@@ -1,6 +1,5 @@
 import numpy as np
 from ase import Atom, Atoms
-from sympy import fraction
 from .. import symmetries as symm
 from  .. import parse 
 class Structure(Atoms):
@@ -110,6 +109,7 @@ class Structure(Atoms):
         print("The structure was symmetrized to the spacegroup:",symm_dataset["international"])
 
         #Use it for the lattice
+        print(symm_dataset["std_lattice"] )
         self.set_cell( symm_dataset["std_lattice"] )
         self.set_chemical_symbols( symm_dataset[ "std_symbols"] )
         self.set_scaled_positions( symm_dataset["std_positions"] )
@@ -152,7 +152,7 @@ class Structure(Atoms):
         xyz = parse.load_xyz(xyz_file);
         cell= parse.load_cell(cell_file);
         atomic_symbols, atomic_positions = list(zip(*xyz));
-        fractional_positions =  list(np.dot(atomic_positions,np.linalg.inv(cell) ))
+        fractional_positions =  list(np.dot(atomic_positions,np.linalg.inv(cell).T ))
         self.__init__(cell=cell, 
                       fractional_positions=fractional_positions, 
                       atomic_symbols=atomic_symbols,\

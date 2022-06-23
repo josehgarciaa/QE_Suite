@@ -77,8 +77,8 @@ class NSCF(Calculation):
             print("A NSCF calculation requires a valid xml file either at",xml_0, "or", xml_1)
             raise FileNotFoundError
 
-        def valid(self) :
-            return True;
+    def valid(self) :
+        return True;
 
 from pathlib import Path
 import errno
