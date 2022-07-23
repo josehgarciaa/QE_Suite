@@ -6,7 +6,6 @@ setup.cfg
 ./qe_suite/constants.py
 ./qe_suite/format.py
 ./qe_suite/get_sssp_pseudos.py
-./qe_suite/io.py
 ./qe_suite/symmetries.olds.py
 ./qe_suite/symmetries.py
 ./qe_suite/vdw.py
@@ -25,6 +24,8 @@ setup.cfg
 ./qe_suite/cards/handler.py
 ./qe_suite/cards/k_points.py
 ./qe_suite/cards/occupations.py
+./qe_suite/io/__init__.py
+./qe_suite/io/wannier90.py
 ./qe_suite/namelists/__init__.py
 ./qe_suite/namelists/cell.py
 ./qe_suite/namelists/control.py

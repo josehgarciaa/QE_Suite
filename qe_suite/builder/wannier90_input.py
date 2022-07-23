@@ -67,7 +67,7 @@ class Wannier90Input():
             out = self.name+"\n";
             for k, v in self.get_parameters().items():
                 if v is not None and k != "name":
-                    out += qe_io.key_format(k)+"="+qe_io.format(v)+"\n"
+                    out += wann_io.key_format(k)+"="+wann_io.format(v)+"\n"
             out += "/\n"
             return out
         #If all parameters are none it means the namelist is not present

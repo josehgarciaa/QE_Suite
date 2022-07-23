@@ -1,5 +1,5 @@
 import qe_suite.format as f
-import .wannier90 as wannier90
+from . import wannier90 as wannier90
 
 def key_format(x):
     
