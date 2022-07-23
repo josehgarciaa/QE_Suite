@@ -1,3 +1,4 @@
+import qe_suite.io.wannier90 as wann_io
 
 class Wannier90Input():
     """
@@ -38,10 +39,6 @@ class Wannier90Input():
         #self.set(mp_grid=);
         #self.set(kpoints=);
         #self.set(spinors=);
-
-
-
-
 
 
     def set(self, **kwargs ):
