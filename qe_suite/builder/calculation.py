@@ -1,6 +1,9 @@
 from .structure import Structure
 from ..namelists import control,ions,cell
 from ..cards import   k_points
+from pathlib import Path
+import errno
+
 class Calculation():
     
     def __init__(self) -> None:
@@ -58,9 +61,6 @@ class SCF(Calculation):
     def valid(self):
         return True;
 
-
-from pathlib import Path
-import errno
 class NSCF(Calculation):
 
     def __init__(self, scf = None , startingpot='file' ) -> None:
@@ -80,8 +80,24 @@ class NSCF(Calculation):
     def valid(self) :
         return True;
 
-from pathlib import Path
-import errno
+class Wannierization(Calculation):
+
+    def __init__(self, scf = None , startingpot='file' ) -> None:
+        super().__init__()
+        self.control = scf.get_control();
+        self.control.set(calculation = 'nscf');
+        self.k_points         = None;
+
+        prefix = self.control.prefix;
+        outdir = self.control.outdir;
+        xml_0 = outdir+prefix+".save/data-file-schema.xml";
+        xml_1 = outdir+prefix+".xml";
+        if ( not Path(xml_0).is_file()) and ( not Path(xml_1).is_file()):
+            print("A NSCF calculation requires a valid xml file either at",xml_0, "or", xml_1)
+            raise FileNotFoundError
+
+    def valid(self) :
+        return True;
 
 class Bands(Calculation):
 
@@ -110,8 +126,6 @@ class Bands(Calculation):
 
     def valid(self) :
         return True;
-
-
 
 class Relaxation(SCF):
         

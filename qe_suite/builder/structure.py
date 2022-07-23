@@ -77,13 +77,23 @@ class Structure(Atoms):
         cosAB,cosAC,cosBC = ncell_params[np.triu_indices(3,k=1)];
         return A,B,C,cosAB,cosAC,cosBC;
 
-    def get_kpoints(self,type="automatic", kp_distance=0.25, shifts=[1,1,1]):
+    def get_kpoints(self,type="automatic", kp_distance=0.25, shifts=[0,0,0]):
 
         rec_vec_lengths = np.linalg.norm( self.get_reciprocal_vectors(),axis=1 );
         rec_vec_divs    = rec_vec_lengths/kp_distance
         kpoints = np.ceil(rec_vec_divs ).astype(int)
         not_periodic = np.logical_not(self.get_periodicity());
-        kpoints[  not_periodic] = 1;
+        kpoints[not_periodic] = 1;
+
+
+        if type == "grid":
+            shape = kpoints;
+            x,y,z = [ np.linspace(0, 1, n,endpoint=False) + s*0.5 for n,s in zip(shape,shifts) ]
+            xv, yv, zv = [ R.flatten() for R in np.meshgrid(x, y,z, indexing='xy') ]
+            wv = np.ones(len(zv));
+            return np.transpose([xv,yv,zv,wv])
+       
+
 
         return [*kpoints,*shifts]
 
