@@ -36,8 +36,10 @@ setup.cfg
 ./qe_suite/namelists/namelist.py
 ./qe_suite/namelists/system.py
 ./qe_suite/parse/__init__.py
-./qe_suite/parse/band_structure.py
 ./qe_suite/parse/utilities.py
+./qe_suite/parse/xml/__init__.py
+./qe_suite/parse/xml/band_structure.py
+./qe_suite/parse/xml/wannier_input.py
 qe_suite.egg-info/PKG-INFO
 qe_suite.egg-info/SOURCES.txt
 qe_suite.egg-info/dependency_links.txt

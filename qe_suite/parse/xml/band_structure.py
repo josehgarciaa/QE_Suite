@@ -87,37 +87,3 @@ class BandStructure():
 
     def get_ylabel(self):
         return self.ylabel;
-
-class parse_Structure():
-
-    def __init__(self, xml) -> None:
-        self.xml    = None;
-        self.tree   = None;
-        self.cell   = None;
-        self.atomic_positions = None;
-        self.set_xml_tree(xml=xml);
-
-    def set_xml_tree(self,xml=None):
-        if xml is not None:
-            self.xml=xml;
-        try:
-            tree = ET.parse(self.xml);
-        except:
-            raise FileNotFoundError
-        self.tree=tree;
-        return self;
-
-    def get_cell(self):
-        if self.cell is None:
-            root= self.tree.getroot()
-            cell  = root.find("output/atomic_structure/cell");
-            self.cell  = [ list(map(float,cell.find("a"+str(i)).text.split(" "))) for i in (1,2,3) ];           
-        return self.cell;
-
-    def get_atomic_positions(self):
-        if self.atomic_positions is None:
-            root= self.tree.getroot()
-            atomic_positions  = root.find("output/atomic_structure/<atomic_positions>");
-            self.cell  = [ cell.find("a"+str(i)).text.split(" "))) for i in (1,2,3) ];           
-        return self.cell;
-
