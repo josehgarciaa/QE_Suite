@@ -15,6 +15,9 @@ class WannierInput():
         self.cell   = None;
         self.atomic_positions = None;
         self.spin_state = None;
+        self.kpoints = None;
+        self.num_bands = None;
+
         self.set_xml_tree(xml=xml);
 
     def set_xml_tree(self,xml=None):
@@ -42,6 +45,25 @@ class WannierInput():
             self.atomic_positions = atom_pos;
         return self.atomic_positions;
     
+    def get_fractional_atomic_positions(self):
+        atm_pos= self.get_atomic_positions();
+        to_frac= np.linalg.inv( self.get_cell() );
+        return [ ( k,to_frac.dot(v) ) for k,v in atm_pos ];
+
+    def get_kpoints(self):
+        if self.kpoints is None:
+            root = self.tree.getroot()
+            kpoints = root.find("input/k_points_IBZ");
+            kpoints = [strvec2list(x.text) for x in kpoints.iter("k_point")]
+            self.kpoints = kpoints;
+        return self.kpoints;
+
+    def get_num_bands(self):
+        if self.num_bands is None:
+            root = self.tree.getroot()
+            self.num_bands = int( root.find("input/bands/nbnd").text );
+        return self.num_bands;
+
     def get_spin_state(self):
         if self.spin_state is None:
             root= self.tree.getroot()
