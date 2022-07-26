@@ -35,7 +35,7 @@ class Wannier90Input():
         #User defined variables
         self.set(num_wann = num_wann)
         self.set(mp_grid  = mp_grid); 
-        self.set(kpoints  = self.kpoints_from_mpgrid(mp_grid) );
+        self.set(kpoints  = self.get_kpoints() );
 
         #Variables read from the previous calculation
         winp = WannierInput(xml=xml);
@@ -66,9 +66,12 @@ class Wannier90Input():
         self.set(auto_projections = False);
         self.write_dmn =False;
     
-    def kpoints_from_mpgrid(self,mp_grid):
-        kx,ky,kz = [ np.linspace(0, 1, n,endpoint=False) for n in mp_grid ];
+    def get_kpoints(self, qe_format =False):
+        kx,ky,kz = [ np.linspace(0, 1, n,endpoint=False) for n in self.mp_grid ];
         kxv, kyv, kzv = [ R.flatten() for R in np.meshgrid(kx,ky,kz, indexing='ij') ];
+
+        if qe_format:
+            return np.transpose([kxv,kyv,kzv,0*kzv+1.0]);
         return np.transpose([kxv,kyv,kzv]);  
 
     def set(self, **kwargs ):

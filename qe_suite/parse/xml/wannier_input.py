@@ -49,21 +49,23 @@ class WannierInput():
         if self.cell is None:
             root= self.tree.getroot()
             cell  = root.find("output/atomic_structure/cell");
-            self.cell  = [ strvec2list( cell.find("a"+str(i)).text ) for i in (1,2,3) ];           
+            self.cell  = np.array([ strvec2list( cell.find("a"+str(i)).text ) for i in (1,2,3) ])*c.bohr2Ang;           
         return self.cell;
 
     def get_atomic_positions(self):
         if self.atomic_positions is None:
-            root= self.tree.getroot()
+            root= self.tree.getroot();
             atom_pos = root.find("output/atomic_structure/atomic_positions");
-            atom_pos = [ (x.attrib["name"],strvec2list(x.text) ) for x in atom_pos.iter("atom") ];
+            atom_pos = [ (x.attrib["name"], strvec2list(x.text))  for x in atom_pos.iter("atom") ];
             self.atomic_positions = atom_pos;
         return self.atomic_positions;
     
     def get_fractional_atomic_positions(self):
         atm_pos= self.get_atomic_positions();
-        to_frac= np.linalg.inv( self.get_cell() );
-        return [ ( k,to_frac.dot(v) ) for k,v in atm_pos ];
+        root= self.tree.getroot();
+        cell     = root.find("output/atomic_structure/cell"); #Cell is in bohr      
+        tofrac   = np.linalg.inv( [ strvec2list( cell.find("a"+str(i)).text ) for i in (1,2,3) ] ).T;
+        return [ ( k,tofrac.dot(v) ) for k,v in atm_pos ];
 
     def get_kpoints(self):
         if self.kpoints is None:
