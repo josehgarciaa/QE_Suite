@@ -2,19 +2,24 @@ import qe_suite.io.wannier90 as wann_io
 from qe_suite.parse.xml import WannierInput
 
 class Projections():
-    begin projections
-    Cu:d
-    f=0.25,0.25,0.25:s
-    f=-0.25,-0.25,-0.25:s
-    end projections
 
-    pos     = (x,y,z);
-    ang_mtm = 2;
-    m   = (-l,..,l);
-    s   = (-1,1)
-    sdir= (0,0,1);
+    def __init__(self, projections=None;, use_spin = False):
+        self.projections = None;
+
+    def __str__(self) -> str:
+        out = "";
+        for p in self.projections:
+            pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir = p;
+            out+="f={},{},{}:l={}:mr={}:".format(*pos,l,mr)+\
+                 "zaxis={},{},{}:xaxis={},{},{}".format(*zaxis,*xaxis)+\
+                 "radial={}:,zona:{}".format(radial,zona);
+            if self.use_spin:
+                out+="({})[{},{},{}]".format(spin,*quant_dir);
+            out+="\n";
+         
+    def set_projection(self,pos, l, mr, xaxis=(1,0,0), zaxis=(0,0,1), zona=1.0, radial=1.0, spin=None, quant_dir=None):
+        self.projections+= (pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir);
     
-    proj = "{},{},{}:l={}:mr={}:({})[{},{},{}]",format(*pos,ang_mtm,m,s,*sdir)    
 class Wannier90Input():
     """
     A generator of input files for Wannier90.
@@ -56,6 +61,15 @@ class Wannier90Input():
         self.set(kpoints =  winp.get_kpoints() );
         self.set(num_bands = winp.get_num_bands() );
         self.set(spinors=winp.get_spin_state()['spin']);
+        self.set(write_xyz = True);
+        self.set(translate_home_cell=True);
+        self.set(auto_projections = True);
+        self.set(write_tb=True);
+
+    def use_bloch_phases(self):
+        self.set(use_bloch_phases = True);
+        self.set(auto_projections = False);
+
 
     def set(self, **kwargs ):
         for k, v in kwargs.items():
@@ -88,3 +102,6 @@ class Wannier90Input():
             return out
         #If all parameters are none it means the namelist is not present
         return ""
+
+    def use_projection_scheme(self,projections):
+        self.set(guiding_centres=True);
