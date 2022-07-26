@@ -78,7 +78,7 @@ class WannierInput():
     def get_num_bands(self):
         if self.num_bands is None:
             root = self.tree.getroot()
-            self.num_bands = int( root.find("input/bands/nbnd").text );
+            self.num_bands = int( root.find("output/band_structure/nbnd").text );
         return self.num_bands;
 
     def get_spin_state(self):

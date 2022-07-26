@@ -1,3 +1,4 @@
+import qe_suite.io as qe_io
 import qe_suite.io.wannier90 as wann_io
 from qe_suite.parse.xml import WannierInput
 import subprocess
@@ -141,8 +142,10 @@ class Wannier90Input():
         inpfile = self.seedname+".pw2wann90";
         try:
             with open(inpfile, "w") as f:
+                f.write("&inputpp\n")
                 for k, v in self.pw2wann90_params.items():
-                    f.write(k+"="+str(v)+"\n");
+                    f.write("\t"+qe_io.key_format(k)+"="+qe_io.format(v)+"\n");
+                f.write("&/\n")
         except:
             raise FileNotFoundError
         if logfile is None:
