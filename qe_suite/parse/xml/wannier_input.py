@@ -12,6 +12,8 @@ class WannierInput():
     def __init__(self, xml) -> None:
         self.xml    = None;
         self.tree   = None;
+        self.outdir = None;
+        self.prefix = None;
         self.cell   = None;
         self.atomic_positions = None;
         self.spin_state = None;
@@ -29,6 +31,19 @@ class WannierInput():
             raise FileNotFoundError
         self.tree=tree;
         return self;
+
+    def get_prefix(self):
+        if self.prefix is None:
+            root = self.tree.getroot()
+            self.prefix = root.find("input/control_variables/prefix").text ;
+        return self.prefix;
+
+    def get_outdir(self):
+        if self.outdir is None:
+            root = self.tree.getroot()
+            self.outdir = root.find("input/control_variables/outdir").text ;
+        return self.outdir;
+
 
     def get_cell(self):
         if self.cell is None:

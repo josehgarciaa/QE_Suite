@@ -1,24 +1,7 @@
 import qe_suite.io.wannier90 as wann_io
 from qe_suite.parse.xml import WannierInput
-
-class Projections():
-
-    def __init__(self, projections=None;, use_spin = False):
-        self.projections = None;
-
-    def __str__(self) -> str:
-        out = "";
-        for p in self.projections:
-            pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir = p;
-            out+="f={},{},{}:l={}:mr={}:".format(*pos,l,mr)+\
-                 "zaxis={},{},{}:xaxis={},{},{}".format(*zaxis,*xaxis)+\
-                 "radial={}:,zona:{}".format(radial,zona);
-            if self.use_spin:
-                out+="({})[{},{},{}]".format(spin,*quant_dir);
-            out+="\n";
-         
-    def set_projection(self,pos, l, mr, xaxis=(1,0,0), zaxis=(0,0,1), zona=1.0, radial=1.0, spin=None, quant_dir=None):
-        self.projections+= (pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir);
+import subprocess
+import numpy as np
     
 class Wannier90Input():
     """
@@ -36,11 +19,11 @@ class Wannier90Input():
     Methods:
     """
 
-    def __init__(self, num_wann, name="qe_suite.wannier", xml=None):
-        self.name = name
+    def __init__(self, num_wann,mp_grid, use_spin=False, seedname="qe_suite.wannier", xml=None):
+        self.seedname =  seedname ;
         self.set_parameters({"num_wann": None, "num_bands": None,"unit_cell_cart": None,"atoms_frac":None,"mp_grid":None,
                              "kpoints":None, "gamma_only":None,"exclude_bands":None,"spinors":None,
-                             "set_projections":None,"spin":None,"translate_home_cell":None,"write_xyz":None, "write_hr":None,
+                             "set_projections":None,"auto_projections":None,"spin":None,"translate_home_cell":None,"write_xyz":None, "write_hr":None,
                              "write_rmn":None,"write_tb":None,"hr_cutoff":None, "dist_cutoff":None, "use_ws_distance":None, 
                              "ws_distance_tol":None, "ws_search_size":None, "write_u_matrices":None, "dis_win_min":None,
                              "dis_win_max":None, "dis_froz_min":None, "dis_froz_max":None, "dis_num_iter":None, 
@@ -48,28 +31,45 @@ class Wannier90Input():
                              "dis_spheres_first_wann":None, "dis_spheres":None, "num_iter" :None, "num_cg_steps":None, "conv_window"
                              "conv_tol":None, "use_bloch_phases":None, "site_symmetry":None, "symmetrize_eps":None});
 
-        self.write_tb  = True;
-        self.write_xyz = True;
 
-        #Variables read from the pwinput
-        #self.set(mp_grid=);
-
-        winp = WannierInput(xml=xml);
+        #User defined variables
         self.set(num_wann = num_wann)
+        self.set(mp_grid  = mp_grid); 
+        self.set(kpoints  = self.kpoints_from_mpgrid(mp_grid) );
+
+        #Variables read from the previous calculation
+        winp = WannierInput(xml=xml);
         self.set(unit_cell_cart = winp.get_cell() );
         self.set(atoms_frac = winp.get_fractional_atomic_positions() );
-        self.set(kpoints =  winp.get_kpoints() );
         self.set(num_bands = winp.get_num_bands() );
         self.set(spinors=winp.get_spin_state()['spin']);
+
+        #Additional variables
         self.set(write_xyz = True);
         self.set(translate_home_cell=True);
         self.set(auto_projections = True);
         self.set(write_tb=True);
 
+
+        #PW2Wannier90
+        self.pw2wann90_params={
+            "seedname":seedname, "outdir":winp.get_outdir(),
+            "prefix":winp.get_prefix(),"write_dmn":True,"read_sym":True,
+            "write_spn":winp.get_spin_state()['spin'],
+            "write_uHu":False, "write_uIu":True,"uIu_formatted":True
+            };
+
+    #METHODS
+
     def use_bloch_phases(self):
         self.set(use_bloch_phases = True);
         self.set(auto_projections = False);
-
+        self.write_dmn =False;
+    
+    def kpoints_from_mpgrid(self,mp_grid):
+        kx,ky,kz = [ np.linspace(0, 1, n,endpoint=False) for n in mp_grid ];
+        kxv, kyv, kzv = [ R.flatten() for R in np.meshgrid(kx,ky,kz, indexing='xy') ];
+        return np.transpose([kxv,kyv,kzv]);  
 
     def set(self, **kwargs ):
         for k, v in kwargs.items():
@@ -105,3 +105,59 @@ class Wannier90Input():
 
     def use_projection_scheme(self,projections):
         self.set(guiding_centres=True);
+
+    def write_wannier90(self):
+        try:
+            with open(self.seedname+".win", "w") as f:
+                    f.write( self.__str__() );
+        except:
+            raise FileNotFoundError
+
+#        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
+
+
+    def run_wannier90(self, qe_path="./", logfile=None):
+        inpfile = self.seedname+".pw2wann90";
+        try:
+            with open(inpfile, "w") as f:
+                for k, v in self.pw2wann90_params.items():
+                    f.write(k+"="+str(v)+"\n");
+        except:
+            raise FileNotFoundError
+        if logfile is None:
+            logfile = inpfile+".log"
+        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
+
+
+    def run_pw2wannier90(self, qe_path="./", logfile=None):
+        inpfile = self.seedname+".pw2wann90";
+        try:
+            with open(inpfile, "w") as f:
+                for k, v in self.pw2wann90_params.items():
+                    f.write(k+"="+str(v)+"\n");
+        except:
+            raise FileNotFoundError
+        if logfile is None:
+            logfile = inpfile+".log"
+        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
+
+class Projections():
+
+    def __init__(self, projections=None, use_spin = False):
+        self.projections = None;
+
+    def __str__(self) -> str:
+        out = "";
+        for p in self.projections:
+            pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir = p;
+            out+="f={},{},{}:l={}:mr={}:".format(*pos,l,mr)+\
+                 "zaxis={},{},{}:xaxis={},{},{}".format(*zaxis,*xaxis)+\
+                 "radial={}:,zona:{}".format(radial,zona);
+            if self.use_spin:
+                out+="({})[{},{},{}]".format(spin,*quant_dir);
+            out+="\n";
+         
+    def set_projection(self,pos, l, mr, xaxis=(1,0,0), zaxis=(0,0,1), zona=1.0, radial=1.0, spin=None, quant_dir=None):
+        self.projections+= (pos,l, mr, xaxis, zaxis, zona, radial, spin, quant_dir);
+
+
