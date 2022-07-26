@@ -12,24 +12,32 @@ def key_value_format(k,v):
         out = "begin unit_cell_cart\n"
         for x in v:
             x = np.round(x,SIG_DIGITS)
-            out += "{} {} {}\n".format(*np.round(x,SIG_DIGITS));
+            out += "{:.6f} {:.6f} {:.6f}\n".format(*x);
         out+="end unit_cell_cart\n"
         return out
 
     if k.strip() == "atoms_frac":
         out = "begin atoms_frac\n"
         for x in v:
-            out += "{} {} {} {}\n".format(x[0],*np.round(x[1],SIG_DIGITS));
+            out += "{} {:.6f} {:.6f} {:.6f}\n".format(x[0],*x[1]);
         out+="end atoms_frac\n"
         return out
 
     if k.strip() == "kpoints":
         out = "begin kpoints\n"
         for x in v:
-            out += "{} {} {}\n".format(*np.round(x,SIG_DIGITS));
+            out += "{:.8f} {:.8f} {:.8f}\n".format(*x);
         out+="end kpoints\n"
         return out
+
+    if k.strip() == "mp_grid":
+        out = k.strip();
+        out += "{} {} {}\n".format(*v);
+        return out
+
     return k+"="+str(v)
+
+
 
 
 

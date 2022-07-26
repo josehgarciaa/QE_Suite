@@ -68,7 +68,7 @@ class Wannier90Input():
     
     def kpoints_from_mpgrid(self,mp_grid):
         kx,ky,kz = [ np.linspace(0, 1, n,endpoint=False) for n in mp_grid ];
-        kxv, kyv, kzv = [ R.flatten() for R in np.meshgrid(kx,ky,kz, indexing='xy') ];
+        kxv, kyv, kzv = [ R.flatten() for R in np.meshgrid(kx,ky,kz, indexing='ij') ];
         return np.transpose([kxv,kyv,kzv]);  
 
     def set(self, **kwargs ):
@@ -98,7 +98,7 @@ class Wannier90Input():
             for k, v in self.get_parameters().items():
                 if v is not None:
                     out += wann_io.key_value_format(k,v)+"\n"
-            out += "/\n"
+            out += "\n"
             return out
         #If all parameters are none it means the namelist is not present
         return ""
@@ -107,16 +107,34 @@ class Wannier90Input():
         self.set(guiding_centres=True);
 
     def write_wannier90(self):
+        fname =self.seedname+".win";
         try:
             with open(self.seedname+".win", "w") as f:
                     f.write( self.__str__() );
         except:
             raise FileNotFoundError
+        return fname
 
-#        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
 
 
-    def run_wannier90(self, qe_path="./", logfile=None):
+    def run(self, w90_path="./", logfile=None, postprocessing=False):
+        inpfile = self.write_wannier90();
+        try:
+            with open(inpfile) as f:
+                pass
+        except:
+            raise FileNotFoundError
+        if logfile is None:
+            logfile = inpfile+".log"
+
+        exec = "wannier90.x ";        
+        if postprocessing:
+            exec+="-pp ";
+
+        proc= subprocess.run([w90_path+exec+inpfile+" |tee "+logfile ], shell=True);
+
+
+    def pw2wannier90(self, qe_path="./", logfile=None):
         inpfile = self.seedname+".pw2wann90";
         try:
             with open(inpfile, "w") as f:
@@ -126,20 +144,7 @@ class Wannier90Input():
             raise FileNotFoundError
         if logfile is None:
             logfile = inpfile+".log"
-        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
-
-
-    def run_pw2wannier90(self, qe_path="./", logfile=None):
-        inpfile = self.seedname+".pw2wann90";
-        try:
-            with open(inpfile, "w") as f:
-                for k, v in self.pw2wann90_params.items():
-                    f.write(k+"="+str(v)+"\n");
-        except:
-            raise FileNotFoundError
-        if logfile is None:
-            logfile = inpfile+".log"
-        proc= subprocess.run([qe_path+"pw.x -inp "+inpfile+" |tee "+logfile ], shell=True);
+        proc= subprocess.run([qe_path+"pw2wannier90.x -inp "+inpfile+" |tee "+logfile ], shell=True);
 
 class Projections():
 
