@@ -30,12 +30,21 @@ def key_value_format(k,v):
         out+="end kpoints\n"
         return out
 
+    if k.strip() == "projections":
+        out = "\nbegin projections\n"
+        if v is not "":
+            out += v;
+        out+="end projections\n"
+        return out
+
+
     if k.strip() == "mp_grid":
         out = k.strip();
         out += "{} {} {}\n".format(*v);
         return out
 
     return k+"="+str(v)
+
 
 
 

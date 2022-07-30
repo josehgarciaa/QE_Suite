@@ -19,7 +19,8 @@ class WannierInput():
         self.spin_state = None;
         self.kpoints = None;
         self.num_bands = None;
-
+        self.fermi_energy = None;
+        
         self.set_xml_tree(xml=xml);
 
     def set_xml_tree(self,xml=None):
@@ -80,6 +81,13 @@ class WannierInput():
             root = self.tree.getroot()
             self.num_bands = int( root.find("output/band_structure/nbnd").text );
         return self.num_bands;
+
+    def get_fermi_energy(self):
+        if self.fermi_energy is None:
+            root = self.tree.getroot()
+            self.fermi_energy = float( root.find("output/band_structure/fermi_energy").text );
+        return self.fermi_energy;
+
 
     def get_spin_state(self):
         if self.spin_state is None:
